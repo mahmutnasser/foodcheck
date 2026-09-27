@@ -4,6 +4,11 @@ const OLD=["foodcheck-history-v10","foodcheck-history-v3","foodcheck-history-v2"
 let current=null,scanStream=null,scanRAF=0,scanActive=false,manualImage="";
 
 const gasWords=["inulin","chicory","chicory root","cichorei","cichoreiwortel","oligofructose","fructooligosaccharide","fos","sorbitol","xylitol","maltitol","mannitol","erythritol"];
+const fructanGroups=[
+ {label:"القمح/دقيق القمح (فركتان)",re:/\b(wheat flour|whole wheat|wheat|tarwebloem|volkoren tarwe|tarwe|weizenmehl|weizen|farine de blé|farina di frumento)\b/i,score:1},
+ {label:"البصل (فركتان)",re:/\b(onion powder|onions|onion|uien|uipoeder|ui-poeder|zwiebel|oignon)\b/i,score:2},
+ {label:"الثوم (فركتان)",re:/\b(garlic powder|garlic|knoflookpoeder|knoflook|knoblauch|ail)\b/i,score:2}
+];
 const refluxWords=["chocolate","chocolade","cocoa","cacao","peppermint","mint","munt","caffeine","cafeïne","coffee","koffie","chili","hot pepper","spicy"];
 const commonFoods=["موز","تفاح","برتقال","فراولة","كيوي","أفوكادو","شوفان","أرز","بطاطس","بيض","دجاج","سمك","زبادي","شوربة","سلطة"];
 const prefs=()=>safeJSON(localStorage.getItem(PREF),{reflux:true,gas:true,chol:true,personal:true});
@@ -36,7 +41,18 @@ function evaluate(p){
  const pr=prefs(),ing=(p.ingredients_text||"").toLowerCase(),sat=Number(p.nutriments?.["saturated-fat_100g"]);
  const out={reflux:{cls:"gray",label:"غير معروف",detail:"بيانات غير كافية"},gas:{cls:"gray",label:"غير معروف",detail:"بيانات غير كافية"},chol:{cls:"gray",label:"غير معروف",detail:"لا توجد قيمة للدهون المشبعة"}};
  let score=0,known=false;
- if(pr.gas){const h=[...new Set(gasWords.filter(w=>ing.includes(w)))];if(h.length){out.gas={cls:"yellow",label:"بحذر",detail:"وجدت: "+h.slice(0,4).join("، ")};score+=2;known=true}else if(ing){out.gas={cls:"green",label:"لا توجد إشارة واضحة",detail:"لم أجد محفزات الغازات التي يبحث عنها التطبيق"};known=true}}
+ if(pr.gas){
+  const h=[...new Set(gasWords.filter(w=>ing.includes(w)))];
+  const fructans=fructanGroups.filter(g=>g.re.test(ing));
+  if(h.length||fructans.length){
+    const notes=[];
+    if(h.length)notes.push("مكونات قد تزيد الغازات: "+h.slice(0,4).join("، "));
+    if(fructans.length)notes.push("قد يسبب انتفاخًا عند بعض الأشخاص بسبب "+fructans.map(g=>g.label).join("، "));
+    out.gas={cls:"yellow",label:"بحذر",detail:notes.join(". ")};
+    score+=h.length?2:Math.max(...fructans.map(g=>g.score));
+    known=true;
+  }else if(ing){out.gas={cls:"green",label:"لا توجد إشارة واضحة",detail:"لم أجد ضمن المكونات محفزات الغازات/الفركتان التي يبحث عنها التطبيق"};known=true}
+ }
  if(pr.reflux){const h=[...new Set(refluxWords.filter(w=>ing.includes(w)))];if(h.length){out.reflux={cls:"yellow",label:"بحذر",detail:"وجدت: "+h.slice(0,4).join("، ")};score+=2;known=true}else if(ing){out.reflux={cls:"green",label:"لا توجد إشارة واضحة",detail:"لم أجد محفزات الارتجاع التي يبحث عنها التطبيق"};known=true}}
  if(pr.chol&&Number.isFinite(sat)){known=true;if(sat>5){out.chol={cls:"red",label:"مرتفع",detail:sat+" غ/100غ"};score+=3}else if(sat>1.5){out.chol={cls:"yellow",label:"متوسط",detail:sat+" غ/100غ"};score+=1}else out.chol={cls:"green",label:"منخفض",detail:sat+" غ/100غ"}}
  let personalNote="";
