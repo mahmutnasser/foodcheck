@@ -31,6 +31,24 @@ function migrate(){
 function isManualCode(code){return String(code||"").startsWith("manual-")}
 function itemByCode(code){return customFoods().find(x=>x.code===code)||history().find(x=>x.code===code)||favorites().find(x=>x.code===code)}
 
+function deleteCustomFood(code){
+ if(!isManualCode(code))return;
+ const item=customFoods().find(x=>x.code===code);
+ if(!item)return;
+ if(!confirm(`حذف «${item.name||"هذه الأكلة"}» نهائيًا من أكلاتي المحفوظة؟\nسيتم أيضًا حذفها من السجل والمفضلة والمقارنة.`))return;
+ saveCustom(customFoods().filter(x=>x.code!==code));
+ saveHistory(history().filter(x=>x.code!==code));
+ localStorage.setItem(FAV,JSON.stringify(favorites().filter(x=>x.code!==code)));
+ localStorage.setItem(COMP,JSON.stringify(compareList().filter(x=>x.code!==code)));
+ if(current?.code===code){
+   current=null;
+   $("#result").classList.add("hidden");
+   $("#result").innerHTML="";
+ }
+ renderAll();
+ toast("تم حذف الأكلة");
+}
+
 function personalStats(code){
  const item=history().find(x=>x.code===code),logs=item?.symptoms||[];
  const bad=logs.filter(s=>s.items?.length&&!s.items.includes("بدون أعراض"));
@@ -99,10 +117,10 @@ function renderProduct(p){
  ${e.personalNote?`<div class="personal ${e.overall.cls}">${esc(e.personalNote)}</div>`:""}
  ${p.notes?`<div class="personal gray">📝 ${esc(p.notes)}</div>`:""}
  ${ing?`<details class="ingredients"><summary>عرض المكونات</summary><p class="small">${esc(ing)}</p></details>`:""}
- <div class="actions"><button id="ateBtn">🍽️ سجل تجربتي</button><button id="favBtn">${isFav?"★ إزالة من المفضلة":"☆ أضف للمفضلة"}</button><button id="compareBtn">${inComp?"✓ في المقارنة":"⚖️ أضف للمقارنة"}</button>${p.manual?'<button id="editManualBtn">✏️ تعديل الأكلة</button>':""}<button id="copyBtn">📋 نسخ النتيجة</button></div>
+ <div class="actions"><button id="ateBtn">🍽️ سجل تجربتي</button><button id="favBtn">${isFav?"★ إزالة من المفضلة":"☆ أضف للمفضلة"}</button><button id="compareBtn">${inComp?"✓ في المقارنة":"⚖️ أضف للمقارنة"}</button>${p.manual?'<button id="editManualBtn">✏️ تعديل الأكلة</button><button id="deleteManualBtn" class="deletebtn">🗑️ حذف الأكلة</button>':""}<button id="copyBtn">📋 نسخ النتيجة</button></div>
  <p class="small">${p.manual?"الأكلات اليدوية تعتمد على المكونات التي تدخلها وسجل تجربتك.":"التقييم إرشادي ومبني على البيانات المتاحة وسجلّك الشخصي."}</p>`;
  $("#ateBtn").onclick=openSymptoms;$("#favBtn").onclick=toggleFavorite;$("#compareBtn").onclick=toggleCompare;
- if(p.manual)$("#editManualBtn").onclick=()=>openManual(false,null,p);
+ if(p.manual){$("#editManualBtn").onclick=()=>openManual(false,null,p);$("#deleteManualBtn").onclick=()=>deleteCustomFood(p.code)}
  $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(`${name}: ${e.overall.label}`);toast("تم نسخ النتيجة")}catch{toast("تعذر النسخ")}};
 }
 function productSnapshot(p){return{code:p.code,name:p.product_name||p.name||"بدون اسم",brands:p.brands||"",image:p.image_front_small_url||p.image||"",ingredients_text:p.ingredients_text||"",nutriments:p.nutriments||{},quantity:p.quantity||"",manual:!!p.manual,category:p.category||"",notes:p.notes||""}}
