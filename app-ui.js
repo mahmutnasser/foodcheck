@@ -16,7 +16,7 @@ function renderDashboard(){
  const ideas=["استخدم زر «أضف أكلة/فاكهة» لتسجيل الطعام الذي لا يحتوي على باركود.","صوّر الطبق واحفظ مكوناته، ثم سجّل شعورك بعده لتكوين سجل شخصي أدق.","قارن بين المنتجات المعبأة عندما تتوفر بياناتها الغذائية."];
  $("#mealIdeas").innerHTML=ideas.map(x=>`<div class="idea">${x}</div>`).join("");
 }
-function showView(id){$$(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));$$(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===id));if(id==="dashboardView")renderDashboard();if(id==="favoritesView")renderFavorites();if(id==="compareView")renderCompare()}
+function showView(id){$(".view").forEach(v=>v.classList.toggle("hidden",v.id!==id));$(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===id));if(id==="dashboardView")renderDashboard();if(id==="favoritesView")renderFavorites();if(id==="compareView")renderCompare();window.scrollTo({top:0,behavior:"smooth"})}
 function renderCustomFoods(){
  const c=customFoods();$("#customFoodsCard").classList.toggle("hidden",!c.length);$("#customCount").textContent=c.length+" محفوظ";
  $("#customFoods").innerHTML=c.slice(0,12).map(x=>`<div class="custom-item clickable" data-code="${esc(x.code)}">${x.image?`<img src="${esc(x.image)}" alt="">`:""}<div class="grow"><b>${esc(x.name)}</b><div class="small">${esc(categoryLabel(x.category))}${x.notes?" · "+esc(x.notes):""}</div></div><button class="deletebtn delete-custom" data-code="${esc(x.code)}" aria-label="حذف">🗑️</button><span>›</span></div>`).join("");
@@ -74,7 +74,8 @@ $("#saveSymptoms").onclick=saveSymptoms;$("#scanBtn").onclick=startScanner;$("#c
 $("#clearCompare").onclick=()=>{localStorage.removeItem(COMP);renderCompare();if(current)renderProduct(current)};
 $("#exportBtn").onclick=exportData;$("#importFile").onchange=e=>e.target.files[0]&&importData(e.target.files[0]);
 $$(".tab").forEach(t=>t.onclick=()=>showView(t.dataset.view));
-$("#commonFoodChips").innerHTML=commonFoods.map(x=>`<button type="button" class="chip">${x}</button>`).join("");$$(".chip").forEach(b=>b.onclick=()=>{$("#manualName").value=b.textContent});
+$("#commonFoodChips").innerHTML=commonFoods.map(x=>`<button type="button" class="chip">${x}</button>`).join("");$(".chip").forEach(b=>b.onclick=()=>{$("#manualName").value=b.textContent});
+$(".popular-food").forEach(b=>b.onclick=()=>openManual(false,b.dataset.food||b.textContent.trim()));
 
 migrate();initPrefs();renderAll();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
