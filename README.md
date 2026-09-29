@@ -1,23 +1,16 @@
-# FoodCheck Ultimate 2
+# FoodCheck Visual Refined v2
 
-نسخة موسعة من FoodCheck تعمل على GitHub Pages.
+Second refinement pass based on the approved visual mockup.
 
-## الجديد
-- إضافة أكلة أو فاكهة أو طبق يدويًا بدون باركود.
-- تصوير الطعام أو اختيار صورة من الهاتف.
-- ضغط الصورة داخل المتصفح قبل حفظها محليًا.
-- كتابة المكونات يدويًا والقيمة الاختيارية للدهون المشبعة.
-- مكتبة محلية لـ «أكلاتي المحفوظة».
-- البحث بالاسم يبحث في الأكلات المحفوظة وفي Open Food Facts.
-- الأكلات اليدوية تعمل مع سجل الأعراض، المفضلة، المقارنة، والتقرير الأسبوعي.
-- تعديل الأكلة اليدوية بعد حفظها.
-- استمرار كل مزايا النسخة Ultimate السابقة.
+Focus:
+- Accurate home layout and proportions
+- Five-item bottom navigation
+- Camera scanner screen
+- Product status cards
+- Ingredients analysis screen
+- Add-food form
+- Saved foods/favorites
+- Product comparison
+- Weekly report
 
-## مهم بخصوص الصور
-هذه النسخة تسمح بتصوير الطعام وحفظه وربطه بالسجل، لكنها لا تتعرف تلقائيًا على نوع الطعام من الصورة. التعرف الآلي الحقيقي يحتاج خدمة AI/Backend خارج GitHub Pages.
-
-## الخصوصية
-الصور والأكلات اليدوية والسجل محفوظة محليًا في المتصفح. بيانات المنتجات المعبأة والبحث تُجلب من Open Food Facts.
-
-## تنبيه
-FoodCheck أداة إرشادية وليست تشخيصًا طبيًا أو بديلًا عن استشارة مختص.
+The app still uses Open Food Facts for public product data and localStorage for personal data.

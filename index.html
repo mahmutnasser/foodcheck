@@ -1,91 +1,147 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f7f2"><title>FoodCheck</title>
-<link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css?v=15">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fbfbf8">
+<meta name="description" content="FoodCheck - مساعد شخصي لفحص الطعام">
+<title>FoodCheck</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css?v=20">
 </head>
-<body><main class="wrap">
-<header class="app-header">
-<button class="iconbtn menu-placeholder" disabled>☰</button>
-<div class="brand"><span class="brand-mark">🌿</span><div><h1>FoodCheck</h1><p>اختيارات أذكى، راحة أكثر</p></div></div>
-<button id="settingsBtn" class="iconbtn" aria-label="الإعدادات">⚙️</button>
-</header>
+<body>
+<main class="app">
+  <section id="homeScreen" class="screen active">
+    <header class="home-head">
+      <button id="settingsBtn" class="icon-btn" aria-label="الإعدادات">⚙</button>
+      <div class="brand-wrap">
+        <div class="logo-mark"><span class="leaf-a"></span><span class="leaf-b"></span></div>
+        <strong class="brand-name">FoodCheck</strong>
+      </div>
+      <button id="homeFavBtn" class="icon-btn heart-top" aria-label="المفضلة">♥</button>
+    </header>
 
-<section id="scanView" class="view">
-<section class="hero-panel">
-<div class="hero-copy"><span class="eyebrow">مرحبًا بك 👋</span><h2>افحص طعامك بسهولة</h2><p>امسح الباركود أو ابحث عن منتج أو أضف أكلة من البيت.</p></div>
-<div class="search-shell"><span class="search-icon">⌕</span><input id="nameSearch" autocomplete="off" placeholder="ابحث عن منتج أو أكلة أو فاكهة..."><button id="nameSearchBtn" class="search-action">بحث</button></div>
-<div class="home-actions">
-<button id="photoBtn" class="home-action"><span>📷</span><b>صوّر وأضف</b></button>
-<button id="scanBtn" class="home-action primary-tile"><span>▥</span><b>امسح الباركود</b></button>
-<button id="manualBtn" class="home-action"><span>＋</span><b>أضف أكلة</b></button>
-</div>
-<details class="barcode-manual"><summary>إدخال باركود يدوي</summary><div class="manual"><input id="barcode" inputmode="numeric" autocomplete="off" placeholder="رقم الباركود"><button id="lookupBtn">بحث</button></div></details>
-<p id="cameraHint" class="small"></p>
-</section>
+    <section class="hero-copy">
+      <h1>اختر طعامك بثقة</h1>
+      <p>تحليل المكونات، دعم القولون، صحة القلب</p>
+    </section>
 
-<section class="section-block"><div class="section-heading"><h2>أطعمة شائعة</h2><span>اختصارات سريعة</span></div>
-<div class="popular-grid">
-<button class="popular-food" data-food="موز"><span>🍌</span><b>موز</b></button>
-<button class="popular-food" data-food="تفاح"><span>🍎</span><b>تفاح</b></button>
-<button class="popular-food" data-food="برتقال"><span>🍊</span><b>برتقال</b></button>
-<button class="popular-food" data-food="فراولة"><span>🍓</span><b>فراولة</b></button>
-<button class="popular-food" data-food="شوفان"><span>🥣</span><b>شوفان</b></button>
-<button class="popular-food" data-food="أرز"><span>🍚</span><b>أرز</b></button>
-<button class="popular-food" data-food="دجاج"><span>🍗</span><b>دجاج</b></button>
-<button class="popular-food" data-food="زبادي"><span>🥛</span><b>زبادي</b></button>
-</div></section>
+    <section class="search-wrap">
+      <input id="searchInput" autocomplete="off" placeholder="ابحث عن منتج أو أكلة أو امسح الباركود...">
+      <button id="searchBtn" class="search-btn" aria-label="بحث">⌕</button>
+    </section>
 
-<section id="customFoodsCard" class="section-block hidden"><div class="section-heading"><h2>أكلاتي المحفوظة</h2><span id="customCount" class="pill"></span></div><div id="customFoods"></div></section>
-<section id="searchResults" class="card result-card hidden"></section>
-<section id="result" class="card result-card hidden"></section>
-<section class="section-block"><div class="section-heading"><h2>آخر ما فحصته</h2><button id="clearBtn" class="textbtn">مسح السجل</button></div><div id="history"></div></section>
-</section>
+    <section class="action-grid">
+      <button id="scanBtn" class="action-card green-tile"><span class="action-icon barcode-icon">▥</span><b>امسح الباركود</b><small>اعرف المنتج فورًا</small></button>
+      <button id="photoAddBtn" class="action-card blue-tile"><span class="action-icon">📷</span><b>صوّر وأضف</b><small>من طبقك المفضل</small></button>
+      <button id="manualAddBtn" class="action-card orange-tile"><span class="action-icon add-circle">＋</span><b>أضف أكلة</b><small>سجل أكلك الخاصة</small></button>
+    </section>
 
-<section id="favoritesView" class="view hidden page-view"><div class="page-title"><div><span class="eyebrow">مجموعتك</span><h2>المفضلة</h2></div><span id="favCount" class="pill"></span></div><section class="section-block"><div id="favoritesList"></div></section></section>
+    <section class="section-title"><h2>أعرف الكل</h2></section>
+    <section id="quickFoodGrid" class="food-grid"></section>
 
-<section id="compareView" class="view hidden page-view"><div class="page-title"><div><span class="eyebrow">اختيار أذكى</span><h2>مقارنة المنتجات</h2></div></div><section class="section-block"><p class="small">أضف عنصرين من شاشة النتيجة للمقارنة.</p><div id="compareBox"></div><button id="clearCompare" class="secondary full">مسح المقارنة</button></section></section>
+    <section class="health-mini-grid">
+      <article class="health-mini heart-card"><div class="mini-icon">♥</div><b>صحة القلب</b><small>دهون مشبعة وكوليسترول</small></article>
+      <article class="health-mini colon-card"><div class="mini-icon">◔</div><b>راحة القولون</b><small>تجنب المحفزات</small></article>
+      <article class="health-mini choice-card"><div class="mini-icon">●</div><b>اختيارات أفضل</b><small>مقارنة المنتجات</small></article>
+    </section>
+  </section>
 
-<section id="dashboardView" class="view hidden page-view">
-<div class="page-title"><div><span class="eyebrow">ملخصك الشخصي</span><h2>تقريري الأسبوعي</h2></div><span class="pill">آخر 7 أيام</span></div>
-<section class="section-block"><div id="statsGrid" class="statsgrid"></div><div id="insights" class="insights-list"></div></section>
-<section class="section-block"><div class="section-heading"><h2>نصائح مخصصة</h2><span>💡</span></div><div id="mealIdeas" class="ideas"></div></section>
-<section class="section-block"><div class="section-heading"><h2>بياناتي</h2><span>💾</span></div><p class="small">صدّر نسخة احتياطية تشمل أكلاتك وصورها وسجل التجارب.</p><div class="actions"><button id="exportBtn">⬇️ تصدير البيانات</button><label class="filebtn">⬆️ استيراد البيانات<input id="importFile" type="file" accept="application/json"></label></div></section>
-</section>
+  <section id="scannerScreen" class="screen scanner-view hidden">
+    <header class="scanner-head">
+      <button class="round-dark" data-back="homeScreen">‹</button>
+      <div class="">
+        <h2>امسح الباركود</h2><p>وجّه الكاميرا نحو الباركود</p>
+      </div>
+      <button id="torchBtn" class="round-dark">ϟ</button>
+    </header>
+    <div class="camera-stage">
+      <video id="scannerVideo" autoplay muted playsinline></video>
+      <div class="scan-corners"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="auto-chip">المسح تلقائيًا</div>
+    <div class="scanner-bottom-actions">
+      <button id="galleryBtn" class="camera-subaction"><span>▧</span><b>من المعرض</b></button>
+      <button id="scanPulseBtn" class="scan-pulse">▥</button>
+      <button id="closeScannerBtn" class="camera-subaction"><span>⌁</span><b>إغلاق</b></button>
+    </div>
+    <p id="scanStatus" class="scan-status"></p>
+  </section>
 
-<nav class="bottom-nav" aria-label="التنقل">
-<button class="tab active" data-view="scanView"><span>⌂</span><b>الرئيسية</b></button>
-<button class="tab" data-view="favoritesView"><span>♡</span><b>المفضلة</b></button>
-<button class="tab" data-view="compareView"><span>⚖</span><b>مقارنة</b></button>
-<button class="tab" data-view="dashboardView"><span>▥</span><b>تقريري</b></button>
-</nav>
+  <section id="resultScreen" class="screen hidden">
+    <header class="sub-head">
+      <button class="icon-btn" data-back="homeScreen">‹</button>
+      <div class="head-actions"><button id="resultFavBtn" class="icon-btn heart-top">♥</button><button class="icon-btn">⋮</button></div>
+    </header>
+    <section class="result-product">
+      <img id="resultImage" class="result-img" alt="">
+      <div class="result-copy"><h2 id="resultName">المنتج</h2><p id="resultMeta"></p><p id="resultCode"></p></div>
+    </section>
+    <section id="overallBox" class="overall-box yellow"><span class="overall-icon">⚠</span><div><b id="overallTitle">بحذر</b><p id="overallDetail"></p></div></section>
+    <section id="healthCards" class="health-card-stack"></section>
+    <button id="ingredientsBtn" class="ingredients-cta">عرض المكونات <span>⌄</span></button>
+    <section class="result-actions">
+      <button id="compareBtn" class="result-action"><span>⚖</span><b>مقارنة</b></button>
+      <button id="favoriteBtn" class="result-action"><span>♥</span><b>أضف للمفضلة</b></button>
+      <button id="experienceBtn" class="result-action primary-action"><span>🍴</span><b>سجل تجربتي</b></button>
+    </section>
+  </section>
 
-<dialog id="manualFood"><form method="dialog" class="dialog" id="manualFoodForm">
-<div><span class="eyebrow">إضافة مخصصة</span><h2>أضف أكلة أو فاكهة</h2></div>
-<div class="photo-picker"><img id="manualPhotoPreview" class="manual-photo hidden" alt=""><label class="photo-drop">📷<span>صوّر أو اختر صورة</span><input id="manualPhoto" type="file" accept="image/*" capture="environment"></label></div>
-<label class="stack">اسم الأكلة أو المنتج<input id="manualName" autocomplete="off" placeholder="مثال: أرز بالدجاج"></label>
-<div class="chips" id="commonFoodChips"></div>
-<label class="stack">النوع<select id="manualCategory"><option value="fruit">فاكهة</option><option value="vegetable">خضار</option><option value="meal">وجبة / أكلة</option><option value="drink">مشروب</option><option value="snack">سناك</option><option value="other">أخرى</option></select></label>
-<label class="stack">المكونات (اختياري)<textarea id="manualIngredients" rows="3" placeholder="مثال: أرز، دجاج، زيت زيتون..."></textarea></label>
-<label class="stack">الدهون المشبعة غ/100غ (اختياري)<input id="manualSatFat" inputmode="decimal" placeholder="مثال: 0.5"></label>
-<label class="stack">ملاحظات (اختياري)<textarea id="manualNotes" rows="2" placeholder="الكمية، طريقة التحضير..."></textarea></label>
-<button id="saveManualFood" class="primary" value="default">حفظ</button></form></dialog>
+  <section id="ingredientsScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="resultScreen">‹</button><h2 class="page-title">المكونات</h2><div class="fake-space"></div></header>
+    <section class="ingredient-product"><img id="ingredientProductImage" class="ingredient-product-img" alt=""><h2 id="ingredientProductName"></h2><p id="ingredientProductMeta"></p></section>
+    <section class="ingredients-panel">
+      <div class="ingredients-title"><span>▦</span><b>قائمة المكونات</b></div>
+      <p id="ingredientText" class="ingredient-text"></p>
+      <div id="ingredientWarnings" class="warning-list"></div>
+      <div class="info-tip"><div class="info-title">💡 معلومة مفيدة</div><p id="ingredientAdvice"></p></div>
+    </section>
+  </section>
 
-<dialog id="settings"><form method="dialog" class="dialog">
-<div><span class="eyebrow">التخصيص</span><h2>الإعدادات</h2></div>
-<label><input type="checkbox" id="reflux" checked> 🔥 مراعاة الحرقان / الارتجاع</label>
-<label><input type="checkbox" id="gas" checked> 💨 مراعاة الغازات / الانتفاخ</label>
-<label><input type="checkbox" id="chol" checked> ❤️ مراعاة الدهون المشبعة</label>
-<label><input type="checkbox" id="personal" checked> 🧠 استخدام سجل تجاربي في التقييم</label>
-<p class="small">السجل والإعدادات والمفضلة محفوظة محليًا في هذا المتصفح.</p><button class="primary">حفظ</button></form></dialog>
+  <section id="addFoodScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">أضف أكلة أو فاكهة</h2><div class="fake-space"></div></header>
+    <section class="add-tabs"><button class="active">📷 صورة</button><button>✎ معلومات</button><button>◔ اختيار سريع</button></section>
+    <section class="add-form">
+      <label class="photo-block" for="foodPhotoInput"><img id="foodPhotoPreview" alt=""><div class="photo-mask"><span>📷</span><b>صوّر أو اختر صورة</b></div><input id="foodPhotoInput" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="form-field"><span>اسم الأكلة أو المنتج</span><input id="foodName" placeholder="مثال: باستا بالدجاج"></label>
+      <label class="form-field"><span>المكونات (اختياري)</span><textarea id="foodIngredients" rows="3" placeholder="اكتب المكونات مثل: أرز، دجاج، زيت زيتون..."></textarea></label>
+      <label class="form-field"><span>ملاحظات (اختياري)</span><textarea id="foodNotes" rows="2" placeholder="مثال: أكلة منزلية، وصفة من المطعم..."></textarea></label>
+      <button id="saveFoodBtn" class="save-main">حفظ الأكلة</button>
+    </section>
+  </section>
 
-<dialog id="symptoms"><form method="dialog" class="dialog">
-<div><span class="eyebrow">سجل تجربتك</span><h2>كيف كان تأثيره عليك؟</h2></div>
-<div class="symptom-grid"><label><input type="checkbox" id="sNone"> ✅ بدون أعراض</label><label><input type="checkbox" id="sHeart"> 🔥 حرقان</label><label><input type="checkbox" id="sGas"> 💨 غازات</label><label><input type="checkbox" id="sBloat"> 🎈 انتفاخ</label></div>
-<label class="stack">الشدة<select id="severity"><option value="1">خفيف</option><option value="2">متوسط</option><option value="3">شديد</option></select></label>
-<button id="saveSymptoms" class="primary" value="default">حفظ التجربة</button></form></dialog>
+  <section id="savedScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">أكلاتي المحفوظة</h2><div class="fake-space"></div></header>
+    <div class="saved-search"><span>⌕</span><input id="savedSearch" placeholder="ابحث في أكلاتي..."></div>
+    <div id="savedFilters" class="saved-filters"><button data-filter="fav">مفضلة</button><button data-filter="meal">وجبات</button><button data-filter="fruit">فاكهة</button><button data-filter="food">أكلات</button><button data-filter="all" class="active">الكل</button></div>
+    <section id="savedList" class="saved-list"></section>
+  </section>
 
-<div id="scannerOverlay" class="scanner-overlay hidden"><div class="scanner-top"><button id="closeScanner" class="scanner-close">✕ إغلاق</button><strong>وجّه الباركود داخل الإطار</strong></div><div class="video-wrap"><video id="scannerVideo" autoplay muted playsinline></video><div class="scan-frame"></div></div><p id="scannerStatus">جاري تشغيل الكاميرا…</p></div>
-<div id="toast" class="toast hidden"></div>
-</main><script src="app-core.js?v=15"></script><script src="app-ui.js?v=15"></script></body></html>
+  <section id="compareScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">مقارنة المنتجات</h2><div class="fake-space"></div></header>
+    <section class="compare-board"><div class="compare-products"><div id="compareOne" class="compare-product"></div><div class="vs">VS</div><div id="compareTwo" class="compare-product"></div></div><div id="compareMatrix" class="compare-matrix"></div><button id="bestForMeBtn" class="save-main">▥ أيهم أفضل لي؟</button></section>
+  </section>
+
+  <section id="reportScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">تقريري الأسبوعي</h2><div class="fake-space"></div></header>
+    <div class="week-switch"><button class="icon-btn">‹</button><span id="weekText">آخر 7 أيام</span><button class="icon-btn">›</button></div>
+    <section id="reportSummary" class="summary-grid"></section>
+    <section class="report-panel"><h3>أكثر ما سبب أعراضًا</h3><div id="symptomBars"></div></section>
+    <section class="report-panel tips-panel"><div class="tips-head">💡 نصائح مخصصة لك</div><ul id="personalTips"></ul></section>
+  </section>
+
+  <nav class="bottom-nav">
+    <button class="nav active" data-screen="homeScreen"><span>⌂</span><b>الرئيسية</b></button>
+    <button class="nav" data-screen="savedScreen" data-mode="all"><span>🍴</span><b>أكلاتي</b></button>
+    <button class="nav" data-screen="savedScreen" data-mode="fav"><span>♡</span><b>المفضلة</b></button>
+    <button class="nav" data-screen="compareScreen"><span>⚖</span><b>مقارنة</b></button>
+    <button class="nav" data-screen="reportScreen"><span>▥</span><b>تقريري</b></button>
+  </nav>
+
+  <dialog id="settingsDialog"><form method="dialog" class="dialog-body"><h3>الإعدادات</h3><label><input id="prefReflux" type="checkbox" checked> راعِ الحرقان والارتجاع</label><label><input id="prefGas" type="checkbox" checked> راعِ الغازات والانتفاخ</label><label><input id="prefChol" type="checkbox" checked> راعِ الدهون المشبعة</label><button id="savePrefsBtn" class="save-main small-save">حفظ</button></form></dialog>
+  <dialog id="experienceDialog"><form method="dialog" class="dialog-body"><h3>كيف كان تأثيره عليك؟</h3><div class="experience-options"><label><input id="expNone" type="checkbox"> بدون أعراض</label><label><input id="expHeart" type="checkbox"> حرقان</label><label><input id="expGas" type="checkbox"> غازات</label><label><input id="expBloat" type="checkbox"> انتفاخ</label></div><button id="saveExperienceBtn" type="button" class="save-main small-save">حفظ التجربة</button></form></dialog>
+  <div id="toast" class="toast hidden"></div>
+</main>
+<script src="app.js?v=20"></script>
+</body>
+</html>
