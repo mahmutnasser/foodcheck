@@ -7,7 +7,7 @@
 <meta name="description" content="FoodCheck - مساعد شخصي لفحص الطعام">
 <title>FoodCheck</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=27">
+<link rel="stylesheet" href="styles.css?v=30">
 </head>
 <body>
 <main class="app">
@@ -28,8 +28,10 @@
 
     <section class="search-wrap">
       <input id="searchInput" autocomplete="off" placeholder="ابحث عن منتج أو أكلة أو امسح الباركود...">
+      <button id="voiceSearchBtn" class="voice-btn" aria-label="بحث صوتي">🎙️</button>
       <button id="searchBtn" class="search-btn" aria-label="بحث">⌕</button>
     </section>
+    <div id="networkBadge" class="network-badge">متصل · البحث العالمي متاح</div>
 
     <section class="action-grid">
       <button id="scanBtn" class="action-card green-tile"><span class="action-icon barcode-icon">▥</span><b>امسح الباركود</b><small>اعرف المنتج فورًا</small></button>
@@ -77,10 +79,27 @@
     </header>
     <section class="result-product">
       <img id="resultImage" class="result-img" alt="">
-      <div class="result-copy"><h2 id="resultName">المنتج</h2><p id="resultMeta"></p><p id="resultCode"></p></div>
+      <div class="result-copy"><h2 id="resultName">المنتج</h2><p id="resultMeta"></p><p id="resultCode"></p><div class="meta-line"><span id="confidenceChip" class="confidence-chip">ثقة منخفضة</span><span id="dataSource" class="data-source"></span></div></div>
     </section>
     <section id="overallBox" class="overall-box yellow"><span class="overall-icon">⚠</span><div><b id="overallTitle">بحذر</b><p id="overallDetail"></p></div></section>
     <section id="healthCards" class="health-card-stack"></section>
+    <section class="portion-card">
+      <div class="portion-head"><div><b>🍽️ قيّم الكمية اللي هتاكلها</b><small>الحساب تقديري عند استخدام وحدات منزلية</small></div></div>
+      <div class="portion-controls">
+        <input id="portionQty" type="number" min="0.1" step="0.1" value="1">
+        <select id="portionUnit">
+          <option value="100g">100 جم</option>
+          <option value="g">جرام</option>
+          <option value="tbsp">معلقة كبيرة ≈ 15 جم</option>
+          <option value="cup">كوباية ≈ 240 جم</option>
+          <option value="halfbaladi">نص رغيف بلدي ≈ 45 جم</option>
+          <option value="baladi">رغيف بلدي ≈ 90 جم</option>
+          <option value="piece">قطعة ≈ 50 جم</option>
+          <option value="sandwich">سندوتش ≈ 180 جم</option>
+        </select>
+      </div>
+      <div id="portionSummary" class="portion-summary"></div>
+    </section>
     <section class="evidence-box">
       <div class="evidence-title">📚 لماذا ظهر هذا القرار؟</div>
       <p id="decisionBasis">التقييم مبني على البيانات المتاحة وإرشادات صحية موثوقة.</p>
@@ -96,6 +115,10 @@
       </div>
     </section>
     <button id="ingredientsBtn" class="ingredients-cta">عرض المكونات <span>⌄</span></button>
+    <section class="community-actions">
+      <button id="correctProductBtn">✏️ صحّح بيانات المنتج</button>
+      <button id="shareContributionBtn">🌍 شارك المنتج للمراجعة</button>
+    </section>
     <section class="result-actions">
       <button id="compareBtn" class="result-action"><span>⚖</span><b>مقارنة</b></button>
       <button id="favoriteBtn" class="result-action"><span>♥</span><b>أضف للمفضلة</b></button>
@@ -129,9 +152,14 @@
     <section class="add-tabs"><button class="active">📷 صورة</button><button>✎ معلومات</button><button>◔ اختيار سريع</button></section>
     <section class="add-form">
       <div id="localProductHint" class="local-product-hint hidden"></div>
-      <label class="photo-block" for="foodPhotoInput"><img id="foodPhotoPreview" alt=""><div class="photo-mask"><span>📷</span><b>صوّر أو اختر صورة</b></div><input id="foodPhotoInput" type="file" accept="image/*" capture="environment" hidden></label>
+      <label class="photo-block" for="foodPhotoInput"><img id="foodPhotoPreview" alt=""><div class="photo-mask"><span>📷</span><b>صوّر ظهر العبوة أو اختر صورة</b></div><input id="foodPhotoInput" type="file" accept="image/*" capture="environment" hidden></label>
+      <button id="ocrBtn" class="ocr-btn" type="button">🔎 استخرج المكونات والقيم من الصورة</button>
+      <div id="ocrStatus" class="ocr-status hidden"></div>
       <label class="form-field"><span>اسم الأكلة أو المنتج</span><input id="foodName" placeholder="مثال: باستا بالدجاج"></label>
+      <div id="egyptIngredientChips" class="ingredient-chips hidden"></div>
       <label class="form-field"><span>المكونات (اختياري)</span><textarea id="foodIngredients" rows="3" placeholder="اكتب المكونات مثل: أرز، دجاج، زيت زيتون..."></textarea></label>
+      <label class="form-field"><span>الدهون المشبعة غ/100غ (اختياري)</span><input id="foodSatFat" inputmode="decimal" placeholder="مثال: 1.2"></label>
+      <label class="form-field"><span>السعر بالجنيه (اختياري)</span><input id="foodPrice" inputmode="decimal" placeholder="مثال: 35"></label>
       <label class="form-field"><span>ملاحظات (اختياري)</span><textarea id="foodNotes" rows="2" placeholder="مثال: أكلة منزلية، وصفة من المطعم..."></textarea></label>
       <button id="saveFoodBtn" class="save-main">حفظ الأكلة</button>
     </section>
@@ -165,10 +193,35 @@
     <button class="nav" data-screen="reportScreen"><span>▥</span><b>تقريري</b></button>
   </nav>
 
-  <dialog id="settingsDialog"><form method="dialog" class="dialog-body"><h3>الإعدادات</h3><label><input id="prefReflux" type="checkbox" checked> راعِ الحرقان والارتجاع</label><label><input id="prefGas" type="checkbox" checked> راعِ الغازات والانتفاخ</label><label><input id="prefChol" type="checkbox" checked> راعِ الدهون المشبعة</label><button id="savePrefsBtn" class="save-main small-save">حفظ</button></form></dialog>
+  <dialog id="settingsDialog"><form method="dialog" class="dialog-body">
+    <h3>الإعدادات</h3>
+    <div class="settings-section">
+      <b>👥 أفراد الأسرة</b>
+      <div class="profile-row"><select id="profileSelect"></select><button id="addProfileBtn" type="button">＋</button><button id="deleteProfileBtn" type="button">🗑️</button></div>
+      <small>لكل فرد سجل أعراض ومفضلة وإعدادات منفصلة على هذا الجهاز.</small>
+    </div>
+    <label><input id="prefReflux" type="checkbox" checked> راعِ الحرقان والارتجاع</label>
+    <label><input id="prefGas" type="checkbox" checked> راعِ الغازات والانتفاخ</label>
+    <label><input id="prefChol" type="checkbox" checked> راعِ الدهون المشبعة</label>
+    <label><input id="prefLowData" type="checkbox"> 📶 وضع توفير البيانات / العمل المحلي</label>
+    <div class="settings-section">
+      <b>🇪🇬 قاعدة FoodCheck Egypt</b>
+      <small id="communityStatus">سيتم تحميل قاعدة المجتمع عند الاتصال.</small>
+      <button id="exportContributionsBtn" type="button" class="secondary-setting-btn">⬇️ تصدير مساهماتي للمراجعة</button>
+    </div>
+    <button id="savePrefsBtn" class="save-main small-save">حفظ</button>
+  </form></dialog>
   <dialog id="experienceDialog"><form method="dialog" class="dialog-body"><h3>كيف كان تأثيره عليك؟</h3><div class="experience-options"><label><input id="expNone" type="checkbox"> بدون أعراض</label><label><input id="expHeart" type="checkbox"> حرقان</label><label><input id="expGas" type="checkbox"> غازات</label><label><input id="expBloat" type="checkbox"> انتفاخ</label></div><button id="saveExperienceBtn" type="button" class="save-main small-save">حفظ التجربة</button></form></dialog>
+  <dialog id="correctionDialog"><form method="dialog" class="dialog-body">
+    <h3>تصحيح بيانات المنتج</h3>
+    <label class="form-field"><span>الاسم</span><input id="correctName"></label>
+    <label class="form-field"><span>المكونات</span><textarea id="correctIngredients" rows="4"></textarea></label>
+    <label class="form-field"><span>الدهون المشبعة غ/100غ</span><input id="correctSatFat" inputmode="decimal"></label>
+    <button id="saveCorrectionBtn" type="button" class="save-main small-save">حفظ التصحيح محليًا</button>
+  </form></dialog>
   <div id="toast" class="toast hidden"></div>
 </main>
-<script src="app.js?v=27"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+<script src="app.js?v=30"></script>
 </body>
 </html>
