@@ -178,7 +178,52 @@ function updateNetworkBadge(){
   else if(prefs().lowData)el.textContent='وضع توفير البيانات · البحث المحلي فقط';
   else el.textContent='متصل · البحث العالمي متاح';
 }
-function showScreen(id,mode){$$('.screen').forEach(s=>{s.classList.add('hidden');s.classList.remove('active')});const el=$('#'+id);if(el){el.classList.remove('hidden');el.classList.add('active')}if(id!=='scannerScreen')stopScanner();if(id==='savedScreen'){savedMode=mode||savedMode;renderSaved()}if(id==='compareScreen')renderCompare();if(id==='reportScreen')renderReport();$$('.nav').forEach(n=>n.classList.toggle('active',n.dataset.screen===id&&(!n.dataset.mode||n.dataset.mode===savedMode)));scrollTo({top:0,behavior:'smooth'})}
+let closingDialogFromHistory=false;
+function activeScreenId(){return $('.screen.active')?.id||'homeScreen'}
+function navState(id,mode){return{foodcheck:true,screen:id,mode:id==='savedScreen'?(mode||savedMode):null}}
+function syncNavigationState(id,mode,opts={}){
+  if(opts.history===false)return;
+  const next=navState(id,mode),prev=history.state;
+  const same=prev?.foodcheck&&prev.screen===next.screen&&(prev.mode||null)===(next.mode||null)&&!prev.dialog;
+  if(same)return;
+  const replace=opts.replace||!prev?.foodcheck||(prev.screen==='scannerScreen'&&id==='resultScreen');
+  if(replace)history.replaceState(next,'');
+  else history.pushState(next,'');
+}
+function showScreen(id,mode,opts={}){
+  $('.screen').forEach(s=>{s.classList.add('hidden');s.classList.remove('active')});
+  const el=$('#'+id);if(el){el.classList.remove('hidden');el.classList.add('active')}
+  if(id!=='scannerScreen')stopScanner();
+  if(id==='savedScreen'){savedMode=mode||savedMode;renderSaved()}
+  if(id==='compareScreen')renderCompare();
+  if(id==='reportScreen')renderReport();
+  $('.nav').forEach(n=>n.classList.toggle('active',n.dataset.screen===id&&(!n.dataset.mode||n.dataset.mode===savedMode)));
+  syncNavigationState(id,mode,opts);
+  scrollTo({top:0,behavior:'smooth'});
+}
+function appBack(fallback='homeScreen'){
+  const st=history.state;
+  if(st?.foodcheck&&st.screen!==fallback){history.back();return}
+  if(st?.foodcheck&&st.screen===fallback&&activeScreenId()!==fallback){showScreen(fallback,undefined,{replace:true});return}
+  if(activeScreenId()!==fallback)showScreen(fallback,undefined,{replace:true});
+}
+function openAppDialog(id){
+  const d=$('#'+id);if(!d)return;
+  const base=history.state?.foodcheck?history.state:navState(activeScreenId(),savedMode);
+  history.pushState({...base,dialog:id},'');
+  d.showModal();
+}
+function closeOpenDialogsFromHistory(){
+  closingDialogFromHistory=true;
+  $('dialog[open]').forEach(d=>d.close());
+  setTimeout(()=>{closingDialogFromHistory=false},0);
+}
+window.addEventListener('popstate',e=>{
+  const st=e.state;
+  if(!st?.foodcheck)return;
+  closeOpenDialogsFromHistory();
+  showScreen(st.screen||'homeScreen',st.mode,{history:false});
+});
 function renderQuick(){ $('#quickFoodGrid').innerHTML=quickFoods.map(([n,e])=>`<button class="food-card" data-food="${esc(n)}"><div class="food-emoji">${e}</div><b>${esc(n)}</b></button>`).join(''); $$('.food-card').forEach(b=>b.onclick=()=>openAddFood(b.dataset.food)); }
 function openAddFood(name='',barcode=''){
   pendingBarcode=barcode||'';
@@ -422,7 +467,7 @@ function openCorrection(){
   $('#correctIngredients').value=current.ingredients_text||'';
   const sat=Number(current.nutriments?.['saturated-fat_100g']);
   $('#correctSatFat').value=Number.isFinite(sat)?sat:'';
-  $('#correctionDialog').showModal();
+  openAppDialog('correctionDialog');
 }
 function saveCorrection(){
   if(!current)return;
@@ -532,7 +577,7 @@ async function startScanner(){showScreen('scannerScreen');$('#scanStatus').textC
 function stopScanner(){if(scannerRAF)cancelAnimationFrame(scannerRAF);scannerRAF=0;if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null}const v=$('#scannerVideo');if(v)v.srcObject=null}
 
 // events
-$('#searchBtn').onclick=()=>searchName($('#searchInput').value);$('#searchInput').onkeydown=e=>{if(e.key==='Enter')searchName(e.target.value)};$('#scanBtn').onclick=startScanner;$('#photoAddBtn').onclick=()=>openAddFood('');$('#manualAddBtn').onclick=()=>openAddFood('');$('#settingsBtn').onclick=()=>{renderProfiles();$('#settingsDialog').showModal()};$('#egyptProductBtn').onclick=()=>openAddFood('');$('#homeFavBtn').onclick=()=>showScreen('savedScreen','fav');$('#ingredientsBtn').onclick=openIngredients;$('#resultFavBtn').onclick=()=>current&&toggleFavorite(current.code);$('#favoriteBtn').onclick=()=>current&&toggleFavorite(current.code);$('#compareBtn').onclick=()=>{if(current){addCompare(current.code);showScreen('compareScreen')}};$('#experienceBtn').onclick=()=>$('#experienceDialog').showModal();$('#saveExperienceBtn').onclick=saveExperience;$('#closeScannerBtn').onclick=()=>showScreen('homeScreen');$('#galleryBtn').onclick=()=>toast('إضافة قراءة الباركود من الصور يمكن تطويرها لاحقًا');$('#scanPulseBtn').onclick=()=>toast('يتم المسح تلقائيًا');$('#foodPhotoInput').onchange=e=>{const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>$('#foodPhotoPreview').src=r.result;r.readAsDataURL(f)};$('#saveFoodBtn').onclick=()=>{const n=$('#foodName').value.trim();if(!n){toast('اكتب اسم الأكلة');return}const sat=Number($('#foodSatFat')?.value),price=Number($('#foodPrice')?.value);const item={code:pendingBarcode||('m'+Date.now()),name:n,image:$('#foodPhotoPreview').src||'',ingredients_text:$('#foodIngredients').value.trim(),notes:$('#foodNotes').value.trim(),manual:true,category:'food',source:'إضافة محلية',price:Number.isFinite(price)?price:null,nutriments:{},symptoms:[]};if(Number.isFinite(sat))item.nutriments['saturated-fat_100g']=sat;saveFood(item);pendingBarcode='';openResult(item);toast('تم حفظ الأكلة وسيتم تذكر الباركود إن وُجد')};$('#savedSearch').oninput=()=>renderSaved();$$('#savedFilters button').forEach(b=>b.onclick=()=>{savedMode=b.dataset.filter;renderSaved()});$('#bestForMeBtn').onclick=()=>toast('قارن الجوانب التي تهمك: الأعراض، الدهون المشبعة، الحصة والسعر. لا يوجد اختيار واحد مناسب للجميع.');$$('[data-back]').forEach(b=>b.onclick=()=>showScreen(b.dataset.back));$$('.nav').forEach(b=>b.onclick=()=>showScreen(b.dataset.screen,b.dataset.mode));$('#savePrefsBtn').onclick=savePrefsFromUI;
+$('#searchBtn').onclick=()=>searchName($('#searchInput').value);$('#searchInput').onkeydown=e=>{if(e.key==='Enter')searchName(e.target.value)};$('#scanBtn').onclick=startScanner;$('#photoAddBtn').onclick=()=>openAddFood('');$('#manualAddBtn').onclick=()=>openAddFood('');$('#settingsBtn').onclick=()=>{renderProfiles();openAppDialog('settingsDialog')};$('#egyptProductBtn').onclick=()=>openAddFood('');$('#homeFavBtn').onclick=()=>showScreen('savedScreen','fav');$('#ingredientsBtn').onclick=openIngredients;$('#resultFavBtn').onclick=()=>current&&toggleFavorite(current.code);$('#favoriteBtn').onclick=()=>current&&toggleFavorite(current.code);$('#compareBtn').onclick=()=>{if(current){addCompare(current.code);showScreen('compareScreen')}};$('#experienceBtn').onclick=()=>openAppDialog('experienceDialog');$('#saveExperienceBtn').onclick=saveExperience;$('#closeScannerBtn').onclick=()=>appBack('homeScreen');$('#galleryBtn').onclick=()=>toast('إضافة قراءة الباركود من الصور يمكن تطويرها لاحقًا');$('#scanPulseBtn').onclick=()=>toast('يتم المسح تلقائيًا');$('#foodPhotoInput').onchange=e=>{const f=e.target.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>$('#foodPhotoPreview').src=r.result;r.readAsDataURL(f)};$('#saveFoodBtn').onclick=()=>{const n=$('#foodName').value.trim();if(!n){toast('اكتب اسم الأكلة');return}const sat=Number($('#foodSatFat')?.value),price=Number($('#foodPrice')?.value);const item={code:pendingBarcode||('m'+Date.now()),name:n,image:$('#foodPhotoPreview').src||'',ingredients_text:$('#foodIngredients').value.trim(),notes:$('#foodNotes').value.trim(),manual:true,category:'food',source:'إضافة محلية',price:Number.isFinite(price)?price:null,nutriments:{},symptoms:[]};if(Number.isFinite(sat))item.nutriments['saturated-fat_100g']=sat;saveFood(item);pendingBarcode='';openResult(item);toast('تم حفظ الأكلة وسيتم تذكر الباركود إن وُجد')};$('#savedSearch').oninput=()=>renderSaved();$$('#savedFilters button').forEach(b=>b.onclick=()=>{savedMode=b.dataset.filter;renderSaved()});$('#bestForMeBtn').onclick=()=>toast('قارن الجوانب التي تهمك: الأعراض، الدهون المشبعة، الحصة والسعر. لا يوجد اختيار واحد مناسب للجميع.');$('[data-back]').forEach(b=>b.onclick=()=>appBack(b.dataset.back));$$('.nav').forEach(b=>b.onclick=()=>showScreen(b.dataset.screen,b.dataset.mode));$('#savePrefsBtn').onclick=savePrefsFromUI;
 
 $('#voiceSearchBtn').onclick=startVoiceSearch;
 $('#portionQty').oninput=renderPortionSummary;$('#portionUnit').onchange=renderPortionSummary;
@@ -544,5 +589,9 @@ $('#addProfileBtn').onclick=addProfile;$('#deleteProfileBtn').onclick=deleteProf
 $('#ocrBtn').onclick=runOcr;
 window.addEventListener('online',()=>{updateNetworkBadge();loadCommunity()});
 window.addEventListener('offline',updateNetworkBadge);
-renderQuick();renderSaved();renderReport();renderProfiles();updateNetworkBadge();loadCommunity();showScreen('homeScreen');
+$('dialog').forEach(d=>d.addEventListener('close',()=>{
+  if(!closingDialogFromHistory&&history.state?.foodcheck&&history.state.dialog===d.id)history.back();
+}));
+history.replaceState(navState('homeScreen','all'),'');
+renderQuick();renderSaved();renderReport();renderProfiles();updateNetworkBadge();loadCommunity();showScreen('homeScreen',undefined,{history:false});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
