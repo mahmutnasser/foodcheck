@@ -1,6 +1,43 @@
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const K={foods:'fc20_foods',history:'fc20_history',favorites:'fc20_favorites',compare:'fc20_compare',prefs:'fc20_prefs'};
 const quickFoods=[['موز','🍌','fruit'],['تفاح','🍎','fruit'],['برتقال','🍊','fruit'],['فراولة','🍓','fruit'],['شوفان','🥣','food'],['أرز','🍚','food'],['دجاج','🍗','meal'],['زبادي','🥛','food']];
+const builtInFoods=[
+  {code:'builtin-garlic',name:'ثوم',aliases:['ثوم','الثوم','garlic'],category:'خضار / بهار',ingredients_text:'ثوم',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-onion',name:'بصل',aliases:['بصل','البصل','onion'],category:'خضار',ingredients_text:'بصل',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-tomato',name:'طماطم',aliases:['طماطم','الطماطم','بندورة','tomato'],category:'خضار',ingredients_text:'طماطم',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-wheat',name:'قمح',aliases:['قمح','القمح','دقيق القمح','دقيق قمح','wheat'],category:'حبوب',ingredients_text:'قمح',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-oats',name:'شوفان',aliases:['شوفان','الشوفان','oats','oat'],category:'حبوب',ingredients_text:'شوفان',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-rice',name:'أرز',aliases:['أرز','ارز','الأرز','الارز','rice'],category:'حبوب',ingredients_text:'أرز',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-banana',name:'موز',aliases:['موز','الموز','banana'],category:'فاكهة',ingredients_text:'موز',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-apple',name:'تفاح',aliases:['تفاح','التفاح','apple'],category:'فاكهة',ingredients_text:'تفاح',nutriments:{},manual:true,image:'',symptoms:[]}
+];
+function normalizeSearchText(s){
+  return String(s||'').toLowerCase().trim()
+    .replace(/[\u064B-\u065F\u0670\u0640]/g,'')
+    .replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/\s+/g,' ');
+}
+function builtInFoodForQuery(q){
+  const n=normalizeSearchText(q);
+  return builtInFoods.find(f=>f.aliases.some(a=>normalizeSearchText(a)===n))||null;
+}
+function looksNonFoodProduct(p){
+  const cats=(p.categories_tags||[]).join(' ');
+  const hay=normalizeSearchText([p.product_name,p.brands,cats].filter(Boolean).join(' '));
+  const bad=['cosmetic','beauty','hair care','hair-care','hair oil','hair-oil','shampoo','conditioner','soap','skin care','skin-care','body care','body-care','essential oil','زيت شعر','شامبو','بلسم','كريم شعر','مستحضر شعر','عنايه بالشعر','العنايه بالشعر'];
+  return bad.some(x=>hay.includes(normalizeSearchText(x)));
+}
+function productSearchScore(p,q){
+  if(!p?.product_name||looksNonFoodProduct(p))return -999;
+  const name=normalizeSearchText(p.product_name), nq=normalizeSearchText(q);
+  let s=0;
+  if(name===nq)s+=10;
+  if(name.includes(nq))s+=5;
+  if((p.ingredients_text||'').trim())s+=2;
+  if(Array.isArray(p.categories_tags)&&p.categories_tags.length)s+=2;
+  if(p.nutriments&&Object.keys(p.nutriments).length)s+=1;
+  return s;
+}
 let current=null, scannerStream=null, scannerRAF=0, savedMode='all', pendingBarcode='';
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}}; const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const foods=()=>load(K.foods,[]), history=()=>load(K.history,[]), favorites=()=>load(K.favorites,[]), compare=()=>load(K.compare,[]), prefs=()=>load(K.prefs,{reflux:true,gas:true,chol:true});
@@ -131,7 +168,35 @@ async function lookupBarcode(code){
     openAddFood('',code);
   }
 }
-async function searchName(q){q=(q||'').trim();if(!q)return;const local=allItems().find(x=>(x.name||'').includes(q));if(local){openResult(local);return}try{const r=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=8`);const d=await r.json();const p=(d.products||[]).find(x=>x.product_name);if(!p)throw 0;openResult(normalizeProduct(p))}catch{toast('لم أجد نتيجة مناسبة')}}
+async function searchName(q){
+  q=(q||'').trim();
+  if(!q)return;
+
+  const built=builtInFoodForQuery(q);
+  if(built){
+    openResult({...built});
+    return;
+  }
+
+  const nq=normalizeSearchText(q);
+  const local=allItems().find(x=>normalizeSearchText(x.name||'').includes(nq));
+  if(local){openResult(local);return}
+
+  try{
+    const url=`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=30&fields=code,product_name,brands,image_front_small_url,ingredients_text,nutriments,quantity,categories_tags`;
+    const r=await fetch(url);
+    const d=await r.json();
+    const ranked=(d.products||[])
+      .map(p=>({p,score:productSearchScore(p,q)}))
+      .filter(x=>x.score>-900)
+      .sort((a,b)=>b.score-a.score);
+    const p=ranked[0]?.p;
+    if(!p)throw 0;
+    openResult(normalizeProduct(p));
+  }catch{
+    toast('لم أجد طعامًا مناسبًا بهذا الاسم — جرّب إضافة الأكلة يدويًا');
+  }
+}
 function openIngredients(){
   if(!current)return;
   const ev=evaluate(current);
