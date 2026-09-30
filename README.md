@@ -1,24 +1,36 @@
 # FoodCheck Egypt
 
-Mobile-first Arabic PWA for food scanning and personal food tracking.
+Mobile-first Arabic PWA for food scanning, food decisions, and personal symptom tracking.
 
-## Egypt market features
-- Egyptian Arabic food aliases and common local dishes
-- Barcode lookup with Open Food Facts plus a reviewed `community-products.json` dataset
-- Missing-barcode local memory
-- Community contribution/review workflow via GitHub issues and JSON export
-- Back-of-pack photo OCR for ingredients and saturated fat (Arabic + English, best effort)
-- Voice search using Egyptian Arabic where supported
-- Portion estimates using grams, tablespoon, cup, baladi bread, piece and sandwich
-- Confidence level and data-source labels on results
-- Product correction workflow
-- Household profiles with separate history, favorites, comparisons and health preferences
-- Low-data / offline-friendly mode
-- Price field and price comparison for manually entered products
-- Recipe ingredient chips for Egyptian dishes whose recipes vary
+## Egypt-focused capabilities
+- Egyptian Arabic aliases and common local dishes
+- Egyptian restaurant mode with recipe-component selection
+- Barcode lookup with Open Food Facts and FoodCheck Egypt community data
+- Duplicate protection by barcode/name
+- Back-of-pack OCR for Arabic/English ingredients and nutrition values
+- Full nutrition entry: calories, fat, saturated fat, sugars, fibre, protein, salt and sodium
+- Salt classification and WHO daily-limit guidance
+- Portion estimates using Egyptian household units
+- Symptom timing + severity and correlation-style personal pattern reports
+- Alternatives based on the reason for a warning
+- Data confidence and source labels
+- Product corrections and community review queue
+- Local admin dashboard for data completeness and pending submissions
+- Optional Supabase backend adapter with RLS schema
+- Household profiles
+- Low-data/offline-friendly mode
+- Install-to-home-screen prompt
+- First-run onboarding
+- Arabic / English core UI switch
+- Price field and comparison
+
+## Optional shared backend
+The app works without a backend. To enable Supabase:
+1. Run `supabase-schema.sql` in your Supabase project.
+2. Edit `backend-config.js` with the project URL and **publishable/anon** key.
+3. Never put a service-role key in this public GitHub Pages frontend.
+
+Public users may read approved products and submit pending products. Approval should happen only through a trusted admin path.
 
 ## Health evidence
-Rules are informational and reference guidance from WHO, NIDDK, WGO, Monash FODMAP, NHS and AHA. FoodCheck does not diagnose disease and does not replace individualized medical or dietetic advice.
-
-## Architecture
-Static GitHub Pages PWA. Personal data stays in browser localStorage. The shared community dataset is read-only from the static site; reviewed submissions can be promoted into `community-products.json`.
+Rules are informational and reference WHO, NIDDK, WGO, Monash FODMAP, NHS and AHA. FoodCheck does not diagnose disease or replace individualized medical or dietetic advice.
