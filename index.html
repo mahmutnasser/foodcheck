@@ -7,7 +7,7 @@
 <meta name="description" content="FoodCheck - مساعد شخصي لفحص الطعام">
 <title>FoodCheck</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="stylesheet" href="styles.css?v=22">
 </head>
 <body>
 <main class="app">
@@ -81,6 +81,17 @@
     </section>
     <section id="overallBox" class="overall-box yellow"><span class="overall-icon">⚠</span><div><b id="overallTitle">بحذر</b><p id="overallDetail"></p></div></section>
     <section id="healthCards" class="health-card-stack"></section>
+    <section class="evidence-box">
+      <div class="evidence-title">📚 لماذا ظهر هذا القرار؟</div>
+      <p id="decisionBasis">التقييم مبني على البيانات المتاحة وإرشادات صحية موثوقة.</p>
+      <div class="source-chips">
+        <a href="https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates" target="_blank" rel="noopener">WHO · الدهون</a>
+        <a href="https://www.niddk.nih.gov/health-information/digestive-diseases/acid-reflux-ger-gerd-adults/eating-diet-nutrition" target="_blank" rel="noopener">NIDDK · الارتجاع</a>
+        <a href="https://www.niddk.nih.gov/health-information/digestive-diseases/irritable-bowel-syndrome/eating-diet-nutrition" target="_blank" rel="noopener">NIDDK · IBS</a>
+        <a href="https://www.monashfodmap.com/about-fodmap-and-ibs/high-and-low-fodmap-foods/" target="_blank" rel="noopener">Monash · FODMAP</a>
+        <a href="https://www.nhs.uk/live-well/eat-well/food-guidelines-and-food-labels/how-to-read-food-labels/" target="_blank" rel="noopener">NHS · الملصقات</a>
+      </div>
+    </section>
     <button id="ingredientsBtn" class="ingredients-cta">عرض المكونات <span>⌄</span></button>
     <section class="result-actions">
       <button id="compareBtn" class="result-action"><span>⚖</span><b>مقارنة</b></button>
@@ -97,6 +108,15 @@
       <p id="ingredientText" class="ingredient-text"></p>
       <div id="ingredientWarnings" class="warning-list"></div>
       <div class="info-tip"><div class="info-title">💡 معلومة مفيدة</div><p id="ingredientAdvice"></p></div>
+      <div class="evidence-box compact-evidence">
+        <div class="evidence-title">المراجع المستخدمة في التحليل</div>
+        <div class="source-chips">
+          <a href="https://www.monashfodmap.com/about-fodmap-and-ibs/high-and-low-fodmap-foods/" target="_blank" rel="noopener">Monash FODMAP</a>
+          <a href="https://www.niddk.nih.gov/health-information/digestive-diseases/irritable-bowel-syndrome/eating-diet-nutrition" target="_blank" rel="noopener">NIDDK IBS</a>
+          <a href="https://www.niddk.nih.gov/health-information/digestive-diseases/acid-reflux-ger-gerd-adults/eating-diet-nutrition" target="_blank" rel="noopener">NIDDK GERD</a>
+          <a href="https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates" target="_blank" rel="noopener">WHO</a>
+        </div>
+      </div>
     </section>
   </section>
 
@@ -145,6 +165,6 @@
   <dialog id="experienceDialog"><form method="dialog" class="dialog-body"><h3>كيف كان تأثيره عليك؟</h3><div class="experience-options"><label><input id="expNone" type="checkbox"> بدون أعراض</label><label><input id="expHeart" type="checkbox"> حرقان</label><label><input id="expGas" type="checkbox"> غازات</label><label><input id="expBloat" type="checkbox"> انتفاخ</label></div><button id="saveExperienceBtn" type="button" class="save-main small-save">حفظ التجربة</button></form></dialog>
   <div id="toast" class="toast hidden"></div>
 </main>
-<script src="app.js?v=21"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>
