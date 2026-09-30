@@ -7,7 +7,7 @@
 <meta name="description" content="FoodCheck - مساعد شخصي لفحص الطعام">
 <title>FoodCheck</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=32">
+<link rel="stylesheet" href="styles.css?v=40">
 </head>
 <body>
 <main class="app">
@@ -40,6 +40,10 @@
     </section>
 
     <button id="egyptProductBtn" class="egypt-cta">🇪🇬 منتج مصري جديد <span>لو الباركود مش موجود، أضفه مرة واحدة</span></button>
+    <section class="market-tools">
+      <button id="restaurantModeBtn"><span>🍽️</span><b>مطاعم مصرية</b><small>حلّل وجبتك حسب مكوناتها</small></button>
+      <button id="adminBtn"><span>🛠️</span><b>لوحة الإدارة</b><small>جودة البيانات والمراجعات</small></button>
+    </section>
 
     <section class="section-title"><h2>أعرف الكل</h2></section>
     <section id="quickFoodGrid" class="food-grid"></section>
@@ -83,6 +87,11 @@
     </section>
     <section id="overallBox" class="overall-box yellow"><span class="overall-icon">⚠</span><div><b id="overallTitle">بحذر</b><p id="overallDetail"></p></div></section>
     <section id="healthCards" class="health-card-stack"></section>
+    <section id="nutritionPanel" class="nutrition-panel">
+      <div class="panel-head"><b>القيم الغذائية / 100غ</b><small>حسب البيانات المتاحة</small></div>
+      <div id="nutritionGrid" class="nutrition-grid"></div>
+      <div id="saltAdvice" class="salt-advice hidden"></div>
+    </section>
     <section class="portion-card">
       <div class="portion-head"><div><b>🍽️ قيّم الكمية اللي هتاكلها</b><small>الحساب تقديري عند استخدام وحدات منزلية</small></div></div>
       <div class="portion-controls">
@@ -115,6 +124,10 @@
       </div>
     </section>
     <button id="ingredientsBtn" class="ingredients-cta">عرض المكونات <span>⌄</span></button>
+    <section id="alternativesBox" class="alternatives-box">
+      <div class="panel-head"><b>🔁 بدائل وخيارات ممكنة</b><small>بناءً على سبب التحذير</small></div>
+      <div id="alternativesList"></div>
+    </section>
     <section class="community-actions">
       <button id="correctProductBtn">✏️ صحّح بيانات المنتج</button>
       <button id="shareContributionBtn">🌍 شارك المنتج للمراجعة</button>
@@ -158,11 +171,38 @@
       <label class="form-field"><span>اسم الأكلة أو المنتج</span><input id="foodName" placeholder="مثال: باستا بالدجاج"></label>
       <div id="egyptIngredientChips" class="ingredient-chips hidden"></div>
       <label class="form-field"><span>المكونات (اختياري)</span><textarea id="foodIngredients" rows="3" placeholder="اكتب المكونات مثل: أرز، دجاج، زيت زيتون..."></textarea></label>
-      <label class="form-field"><span>الدهون المشبعة غ/100غ (اختياري)</span><input id="foodSatFat" inputmode="decimal" placeholder="مثال: 1.2"></label>
+      <div class="nutrition-entry">
+        <b>القيم الغذائية لكل 100غ (اختياري)</b>
+        <div class="nutrition-entry-grid">
+          <label><span>السعرات kcal</span><input id="foodEnergy" inputmode="decimal"></label>
+          <label><span>الدهون</span><input id="foodFat" inputmode="decimal"></label>
+          <label><span>المشبعة</span><input id="foodSatFat" inputmode="decimal"></label>
+          <label><span>السكريات</span><input id="foodSugars" inputmode="decimal"></label>
+          <label><span>الألياف</span><input id="foodFiber" inputmode="decimal"></label>
+          <label><span>البروتين</span><input id="foodProtein" inputmode="decimal"></label>
+          <label><span>الملح</span><input id="foodSalt" inputmode="decimal"></label>
+          <label><span>الصوديوم</span><input id="foodSodium" inputmode="decimal"></label>
+        </div>
+      </div>
       <label class="form-field"><span>السعر بالجنيه (اختياري)</span><input id="foodPrice" inputmode="decimal" placeholder="مثال: 35"></label>
       <label class="form-field"><span>ملاحظات (اختياري)</span><textarea id="foodNotes" rows="2" placeholder="مثال: أكلة منزلية، وصفة من المطعم..."></textarea></label>
       <button id="saveFoodBtn" class="save-main">حفظ الأكلة</button>
     </section>
+  </section>
+
+  <section id="restaurantScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">مطاعم مصرية</h2><div class="fake-space"></div></header>
+    <p class="screen-intro">اختار الأكلة ثم حدّد المكونات الموجودة فعلًا. الوصفات تختلف من مطعم لآخر.</p>
+    <div id="restaurantSearchWrap" class="saved-search"><span>⌕</span><input id="restaurantSearch" placeholder="كشري، حواوشي، شاورما..."></div>
+    <section id="restaurantGrid" class="restaurant-grid"></section>
+  </section>
+
+  <section id="adminScreen" class="screen hidden">
+    <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">لوحة الإدارة</h2><div class="fake-space"></div></header>
+    <section id="adminStats" class="admin-stats"></section>
+    <section class="admin-panel"><h3>جودة البيانات</h3><div id="qualityList"></div></section>
+    <section class="admin-panel"><h3>المساهمات المعلّقة</h3><div id="pendingAdminList"></div></section>
+    <section class="admin-panel"><h3>Backend</h3><p id="backendAdminStatus"></p><button id="syncBackendBtn" class="save-main small-save">مزامنة الآن</button></section>
   </section>
 
   <section id="savedScreen" class="screen hidden">
@@ -182,6 +222,7 @@
     <div class="week-switch"><button class="icon-btn">‹</button><span id="weekText">آخر 7 أيام</span><button class="icon-btn">›</button></div>
     <section id="reportSummary" class="summary-grid"></section>
     <section class="report-panel"><h3>أكثر ما سبب أعراضًا</h3><div id="symptomBars"></div></section>
+    <section class="report-panel"><h3>ارتباطات محتملة بين الأكل والأعراض</h3><p class="panel-note">هذه ارتباطات من سجلك وليست إثباتًا أن الطعام هو السبب.</p><div id="patternList"></div></section>
     <section class="report-panel tips-panel"><div class="tips-head">💡 نصائح مخصصة لك</div><ul id="personalTips"></ul></section>
   </section>
 
@@ -204,24 +245,52 @@
     <label><input id="prefGas" type="checkbox" checked> راعِ الغازات والانتفاخ</label>
     <label><input id="prefChol" type="checkbox" checked> راعِ الدهون المشبعة</label>
     <label><input id="prefLowData" type="checkbox"> 📶 وضع توفير البيانات / العمل المحلي</label>
+    <div class="settings-section"><b>🌐 اللغة</b><select id="languageSelect"><option value="ar">العربية</option><option value="en">English</option></select></div>
     <div class="settings-section">
       <b>🇪🇬 قاعدة FoodCheck Egypt</b>
       <small id="communityStatus">سيتم تحميل قاعدة المجتمع عند الاتصال.</small>
+      <small id="backendStatus">Backend: غير متصل</small>
       <button id="exportContributionsBtn" type="button" class="secondary-setting-btn">⬇️ تصدير مساهماتي للمراجعة</button>
+      <button id="openAdminBtn" type="button" class="secondary-setting-btn">🛠️ فتح لوحة الإدارة</button>
     </div>
     <button id="savePrefsBtn" class="save-main small-save">حفظ</button>
   </form></dialog>
-  <dialog id="experienceDialog"><form method="dialog" class="dialog-body"><h3>كيف كان تأثيره عليك؟</h3><div class="experience-options"><label><input id="expNone" type="checkbox"> بدون أعراض</label><label><input id="expHeart" type="checkbox"> حرقان</label><label><input id="expGas" type="checkbox"> غازات</label><label><input id="expBloat" type="checkbox"> انتفاخ</label></div><button id="saveExperienceBtn" type="button" class="save-main small-save">حفظ التجربة</button></form></dialog>
+  <dialog id="experienceDialog"><form method="dialog" class="dialog-body"><h3>كيف كان تأثيره عليك؟</h3><div class="experience-options"><label><input id="expNone" type="checkbox"> بدون أعراض</label><label><input id="expHeart" type="checkbox"> حرقان</label><label><input id="expGas" type="checkbox"> غازات</label><label><input id="expBloat" type="checkbox"> انتفاخ</label></div>
+    <label class="form-field"><span>ظهرت الأعراض بعد الأكل بكام؟</span><select id="expDelay"><option value="0">أثناء/مباشرة</option><option value="0.5">نصف ساعة</option><option value="1">ساعة</option><option value="2">ساعتين</option><option value="4">4 ساعات</option><option value="8">8 ساعات أو أكثر</option></select></label>
+    <label class="form-field"><span>شدة الأعراض</span><select id="expSeverity"><option value="1">خفيفة</option><option value="2">متوسطة</option><option value="3">شديدة</option></select></label>
+    <button id="saveExperienceBtn" type="button" class="save-main small-save">حفظ التجربة</button></form></dialog>
   <dialog id="correctionDialog"><form method="dialog" class="dialog-body">
     <h3>تصحيح بيانات المنتج</h3>
     <label class="form-field"><span>الاسم</span><input id="correctName"></label>
     <label class="form-field"><span>المكونات</span><textarea id="correctIngredients" rows="4"></textarea></label>
-    <label class="form-field"><span>الدهون المشبعة غ/100غ</span><input id="correctSatFat" inputmode="decimal"></label>
+    <div class="nutrition-entry-grid compact">
+      <label><span>الدهون</span><input id="correctFat" inputmode="decimal"></label>
+      <label><span>المشبعة</span><input id="correctSatFat" inputmode="decimal"></label>
+      <label><span>السكريات</span><input id="correctSugars" inputmode="decimal"></label>
+      <label><span>الألياف</span><input id="correctFiber" inputmode="decimal"></label>
+      <label><span>البروتين</span><input id="correctProtein" inputmode="decimal"></label>
+      <label><span>الملح</span><input id="correctSalt" inputmode="decimal"></label>
+    </div>
     <button id="saveCorrectionBtn" type="button" class="save-main small-save">حفظ التصحيح محليًا</button>
   </form></dialog>
+  <dialog id="onboardingDialog" class="onboarding-dialog"><form method="dialog" class="dialog-body">
+    <div class="onboarding-logo">🌿</div>
+    <h3>خلّي FoodCheck مناسب لك</h3>
+    <p>اختار الجوانب اللي تحب التطبيق يراعيها. تقدر تغيّرها لاحقًا.</p>
+    <label><input id="onboardReflux" type="checkbox" checked> الحرقان والارتجاع</label>
+    <label><input id="onboardGas" type="checkbox" checked> الغازات والانتفاخ / القولون</label>
+    <label><input id="onboardChol" type="checkbox" checked> الدهون المشبعة والكوليسترول</label>
+    <label class="form-field"><span>اللغة</span><select id="onboardLanguage"><option value="ar">العربية</option><option value="en">English</option></select></label>
+    <button id="finishOnboardingBtn" type="button" class="save-main small-save">ابدأ استخدام FoodCheck</button>
+  </form></dialog>
+  <aside id="installBanner" class="install-banner hidden">
+    <div><b>📲 ثبّت FoodCheck</b><small id="installText">افتحه كتطبيق من الشاشة الرئيسية</small></div>
+    <button id="installAppBtn">تثبيت</button><button id="dismissInstallBtn">×</button>
+  </aside>
   <div id="toast" class="toast hidden"></div>
 </main>
+<script src="backend-config.js?v=40"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
-<script src="app.js?v=32"></script>
+<script src="app.js?v=40"></script>
 </body>
 </html>
