@@ -7,7 +7,7 @@
 <meta name="description" content="FoodCheck - مساعد شخصي لفحص الطعام">
 <title>FoodCheck</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="styles.css?v=20">
+<link rel="stylesheet" href="styles.css?v=21">
 </head>
 <body>
 <main class="app">
@@ -36,6 +36,8 @@
       <button id="photoAddBtn" class="action-card blue-tile"><span class="action-icon">📷</span><b>صوّر وأضف</b><small>من طبقك المفضل</small></button>
       <button id="manualAddBtn" class="action-card orange-tile"><span class="action-icon add-circle">＋</span><b>أضف أكلة</b><small>سجل أكلك الخاصة</small></button>
     </section>
+
+    <button id="egyptProductBtn" class="egypt-cta">🇪🇬 منتج مصري جديد <span>لو الباركود مش موجود، أضفه مرة واحدة</span></button>
 
     <section class="section-title"><h2>أعرف الكل</h2></section>
     <section id="quickFoodGrid" class="food-grid"></section>
@@ -102,6 +104,7 @@
     <header class="sub-head"><button class="icon-btn" data-back="homeScreen">‹</button><h2 class="page-title">أضف أكلة أو فاكهة</h2><div class="fake-space"></div></header>
     <section class="add-tabs"><button class="active">📷 صورة</button><button>✎ معلومات</button><button>◔ اختيار سريع</button></section>
     <section class="add-form">
+      <div id="localProductHint" class="local-product-hint hidden"></div>
       <label class="photo-block" for="foodPhotoInput"><img id="foodPhotoPreview" alt=""><div class="photo-mask"><span>📷</span><b>صوّر أو اختر صورة</b></div><input id="foodPhotoInput" type="file" accept="image/*" capture="environment" hidden></label>
       <label class="form-field"><span>اسم الأكلة أو المنتج</span><input id="foodName" placeholder="مثال: باستا بالدجاج"></label>
       <label class="form-field"><span>المكونات (اختياري)</span><textarea id="foodIngredients" rows="3" placeholder="اكتب المكونات مثل: أرز، دجاج، زيت زيتون..."></textarea></label>
@@ -142,6 +145,6 @@
   <dialog id="experienceDialog"><form method="dialog" class="dialog-body"><h3>كيف كان تأثيره عليك؟</h3><div class="experience-options"><label><input id="expNone" type="checkbox"> بدون أعراض</label><label><input id="expHeart" type="checkbox"> حرقان</label><label><input id="expGas" type="checkbox"> غازات</label><label><input id="expBloat" type="checkbox"> انتفاخ</label></div><button id="saveExperienceBtn" type="button" class="save-main small-save">حفظ التجربة</button></form></dialog>
   <div id="toast" class="toast hidden"></div>
 </main>
-<script src="app.js?v=20"></script>
+<script src="app.js?v=21"></script>
 </body>
 </html>
