@@ -17,3 +17,12 @@ dialog{border:0;border-radius:22px;padding:0;box-shadow:0 25px 70px rgba(0,0,0,.
 .egypt-cta span{font-size:11px;font-weight:600;color:#92794a}
 .local-product-hint{margin-bottom:12px;border-radius:16px;padding:13px 14px;background:#fff5dc;border:1px solid #f0dca4;color:#6d5518;font-size:13px;line-height:1.6}
 .ingredient-warning.info{background:#eaf4fd;color:#2f6c9e}
+
+.health-row.gray{background:#f0f1ee;color:#5f655f}
+.overall-box.gray{background:#f0f1ee;color:#5f655f}
+.evidence-box{margin:12px 0;background:#f7faf6;border:1px solid #dfe8dd;border-radius:18px;padding:14px}
+.evidence-title{font-weight:900;color:#315b41;margin-bottom:6px}
+.evidence-box p{margin:0 0 10px;line-height:1.55;font-size:12px;color:#526056}
+.source-chips{display:flex;gap:6px;flex-wrap:wrap}
+.source-chips a{text-decoration:none;background:#fff;border:1px solid #dfe5dc;color:#315b41;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+.compact-evidence{margin-top:12px;background:#fbfcfa}
