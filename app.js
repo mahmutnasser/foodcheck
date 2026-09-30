@@ -1,7 +1,7 @@
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const K={
   foods:'fc20_foods',history:'fc20_history',favorites:'fc20_favorites',compare:'fc20_compare',prefs:'fc20_prefs',
-  profiles:'fc_profiles_v1',activeProfile:'fc_active_profile_v1',contributions:'fc_contributions_v1',communityCache:'fc_egypt_community_v1'
+  profiles:'fc_profiles_v1',activeProfile:'fc_active_profile_v1',contributions:'fc_contributions_v1',communityCache:'fc_egypt_community_v1',onboarded:'fc_onboarded_v1',installDismissed:'fc_install_dismissed_v1'
 };
 let activeProfileId=localStorage.getItem(K.activeProfile)||'me';
 let communityProducts=[];
@@ -137,7 +137,7 @@ function initProfiles(){
   });
 }
 initProfiles();
-const foods=()=>load(pkey(K.foods),[]), history=()=>load(pkey(K.history),[]), favorites=()=>load(pkey(K.favorites),[]), compare=()=>load(pkey(K.compare),[]), prefs=()=>load(pkey(K.prefs),{reflux:true,gas:true,chol:true,lowData:false});
+const foods=()=>load(pkey(K.foods),[]), history=()=>load(pkey(K.history),[]), favorites=()=>load(pkey(K.favorites),[]), compare=()=>load(pkey(K.compare),[]), prefs=()=>load(pkey(K.prefs),{reflux:true,gas:true,chol:true,lowData:false,language:'ar'});
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.remove('hidden');setTimeout(()=>el.classList.add('hidden'),1900)}
 function allItems(){const m=new Map();[...foods(),...history()].forEach(x=>m.set(x.code,x));return [...m.values()]}
@@ -231,8 +231,7 @@ function openAddFood(name='',barcode=''){
   $('#foodName').value=name;
   $('#foodIngredients').value='';
   $('#foodNotes').value=barcode?`باركود: ${barcode}`:'';
-  if($('#foodSatFat'))$('#foodSatFat').value='';
-  if($('#foodPrice'))$('#foodPrice').value='';
+  ['foodEnergy','foodFat','foodSatFat','foodSugars','foodFiber','foodProtein','foodSalt','foodSodium','foodPrice'].forEach(id=>{if($('#'+id))$('#'+id).value=''})
   if($('#ocrStatus')){$('#ocrStatus').textContent='';$('#ocrStatus').classList.add('hidden')}
   $('#foodPhotoPreview').src='';
   renderDishChips(name);
@@ -243,8 +242,14 @@ function openAddFood(name='',barcode=''){
   }
 }
 function addHistory(item){const h=history().filter(x=>x.code!==item.code);h.unshift({...item,lastSeen:Date.now(),symptoms:item.symptoms||[]});save(pkey(K.history),h.slice(0,40))}
-function saveFood(item){const f=foods().filter(x=>x.code!==item.code);f.unshift(item);save(pkey(K.foods),f.slice(0,80));addHistory(item)}
+function saveFood(item){const n=normalizeSearchText(item.name||'');const f=foods().filter(x=>x.code!==item.code&&(!n||normalizeSearchText(x.name||'')!==n));f.unshift(item);save(pkey(K.foods),f.slice(0,120));addHistory(item)}
 function normalizeProduct(p){return{code:p.code||('p'+Date.now()),name:p.product_name||'بدون اسم',brands:p.brands||'',image:p.image_front_small_url||'',quantity:p.quantity||'',ingredients_text:p.ingredients_text||'',nutriments:p.nutriments||{},manual:false,symptoms:[],source:'Open Food Facts'}}
+function numN(item,key){const v=Number(item?.nutriments?.[key]);return Number.isFinite(v)?v:null}
+function saltPer100g(item){const salt=numN(item,'salt_100g');if(salt!=null)return salt;const sodium=numN(item,'sodium_100g');return sodium!=null?sodium*2.5:null}
+function saltClass(v){if(v==null)return{cls:'gray',label:'غير معروف'};if(v>1.5)return{cls:'red',label:'مرتفع'};if(v<=0.3)return{cls:'green',label:'منخفض'};return{cls:'yellow',label:'متوسط'}}
+function nutritionRows(item){const n=item.nutriments||{};const rows=[['الطاقة',Number(n['energy-kcal_100g']),'kcal'],['الدهون',Number(n['fat_100g']),'غ'],['المشبعة',Number(n['saturated-fat_100g']),'غ'],['السكريات',Number(n['sugars_100g']),'غ'],['الألياف',Number(n['fiber_100g']),'غ'],['البروتين',Number(n['proteins_100g']),'غ'],['الملح',saltPer100g(item),'غ']];return rows.map(([label,v,u])=>({label,value:Number.isFinite(v)?v:null,unit:u}))}
+function renderNutrition(item){const grid=$('#nutritionGrid'),advice=$('#saltAdvice');if(!grid)return;const rows=nutritionRows(item),known=rows.filter(r=>r.value!=null);$('#nutritionPanel')?.classList.toggle('hidden',!known.length);grid.innerHTML=known.map(r=>`<div class="nutrition-cell"><small>${esc(r.label)}</small><b>${Number(r.value.toFixed(2))} ${r.unit}</b></div>`).join('');const salt=saltPer100g(item),sc=saltClass(salt);if(advice){advice.className='salt-advice '+(salt==null?'hidden':sc.cls);advice.textContent=salt==null?'':`الملح: ${sc.label} (${Number(salt.toFixed(2))}غ/100غ). WHO توصي للبالغين بأقل من 5غ ملح يوميًا.`}}
+function renderAlternatives(item,ev){const box=$('#alternativesList');if(!box)return;const tips=[];const sat=numN(item,'saturated-fat_100g'),salt=saltPer100g(item);if(sat!=null&&sat>5)tips.push('اختَر منتجًا أقل في الدهون المشبعة.');if(salt!=null&&salt>1.5)tips.push('ابحث عن نسخة أقل ملحًا وقارن الملصق لكل 100غ.');if(ev.garlic.length||ev.onion.length)tips.push('لو البصل أو الثوم يسببان لك أعراضًا، جرّب نسخة بدونهما أو كمية أصغر.');if(ev.reflux.length)tips.push('للحرقان: جرّب كمية أصغر أو نسخة أقل دهونًا/حدة إذا كانت هذه من محفزاتك.');if(ev.cards[1].cls==='yellow')tips.push('للانتفاخ: صغّر الحصة وسجّل استجابتك بدل المنع الدائم تلقائيًا.');if(!tips.length)tips.push('لا يوجد بديل محدد مطلوب من البيانات الحالية؛ قارن الحصة والمكونات والقيم الغذائية.');box.innerHTML=tips.map(t=>`<div class="alternative-row">${esc(t)}</div>`).join('')}
 function evaluate(item){
   const p=prefs();
   const ing=(item.ingredients_text||'').toLowerCase().trim();
@@ -329,7 +334,8 @@ function evaluate(item){
     heartCard={icon:'♥',title:'الدهون المشبعة / الكوليسترول',...fat};
   }
 
-  const cards=[refluxCard,gasCard,heartCard];
+  const salt=saltPer100g(item),saltInfo=saltClass(salt);const saltCard={icon:'🧂',title:'الملح',cls:saltInfo.cls,value:salt==null?'معلومات غير كافية':saltInfo.label,detail:salt==null?'لا توجد قيمة ملح/صوديوم':'الملح '+Number(salt.toFixed(2))+'غ/100غ'};
+  const cards=[refluxCard,gasCard,heartCard,saltCard];
   const active=cards.filter(c=>c.value!=='غير مفعّل');
   const red=active.some(c=>c.cls==='red');
   const yellow=active.some(c=>c.cls==='yellow');
@@ -350,7 +356,7 @@ function evaluate(item){
     !genericRedMeat&&(heartCard.cls==='red'||heartCard.cls==='yellow')?'القلب: تصنيف الدهون المشبعة يعتمد على غ/100غ؛ حدود 1.5غ و5غ مأخوذة من إرشادات قراءة الملصقات في NHS، مع هدف WHO اليومي للدهون المشبعة.':''
   ].filter(Boolean).join(' ');
 
-  return{overall,title,detail,cards,wheat,onion,garlic,polyols,inulin,lactose,fructose,highFodmapFruit,legumes,fodmapVeg,reflux,palm,partialHydrogenated,sat,totalFat,basis,genericRedMeat,processedMeat};
+  return{overall,title,detail,cards,wheat,onion,garlic,polyols,inulin,lactose,fructose,highFodmapFruit,legumes,fodmapVeg,reflux,palm,partialHydrogenated,sat,totalFat,basis,genericRedMeat,processedMeat,salt};
 }
 function openResult(item){current=item;addHistory(item);const ev=evaluate(item);showScreen('resultScreen');$('#resultImage').src=item.image||'';$('#resultImage').style.visibility=item.image?'visible':'hidden';$('#resultName').textContent=item.name||'بدون اسم';$('#resultMeta').textContent=item.manual?(item.category||'أكلة محفوظة'):`${item.brands||''}${item.quantity?' · '+item.quantity:''}`;$('#resultCode').textContent=item.manual?'':item.code;const box=$('#overallBox');box.className='overall-box '+ev.overall;$('#overallTitle').textContent=ev.title;$('#overallDetail').textContent=ev.detail;$('#healthCards').innerHTML=ev.cards.map(c=>`<div class="health-row ${c.cls}"><div class="hicon">${c.icon}</div><div class="hcopy"><strong>${esc(c.title)}</strong><b>${esc(c.value)}</b><p>${esc(c.detail)}</p></div></div>`).join('');if($('#decisionBasis'))$('#decisionBasis').textContent=ev.basis||'التقييم يعتمد على البيانات المتاحة فقط، ولا توجد قاعدة واحدة تمنع طعامًا بعينه لكل الأشخاص.';
 const cf=confidenceFor(item);if($('#confidenceChip')){$('#confidenceChip').textContent=`ثقة ${cf.level}`;$('#confidenceChip').className='confidence-chip '+cf.cls;$('#confidenceChip').title=cf.why}
@@ -358,6 +364,7 @@ if($('#dataSource'))$('#dataSource').textContent='المصدر: '+sourceLabel(it
 if($('#portionQty'))$('#portionQty').value=1;
 if($('#portionUnit'))$('#portionUnit').value='100g';
 renderPortionSummary();
+renderNutrition(item);renderAlternatives(item,ev);
 refreshFavButtons()}
 function refreshFavButtons(){if(!current)return;const yes=favorites().includes(current.code);$('#resultFavBtn').textContent=yes?'♥':'♡';$('#favoriteBtn').innerHTML=`<span>${yes?'♥':'♡'}</span><b>${yes?'إزالة من المفضلة':'أضف للمفضلة'}</b>`}
 function toggleFavorite(code){const f=favorites();save(pkey(K.favorites),f.includes(code)?f.filter(x=>x!==code):[code,...f]);refreshFavButtons();renderSaved()}
