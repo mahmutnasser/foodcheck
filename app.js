@@ -438,6 +438,23 @@ function queueContribution(){
   const next=q.filter(x=>x.code!==entry.code); next.unshift(entry); save(K.contributions,next.slice(0,100));
   toast('تم تجهيز المنتج للمراجعة ضمن مساهماتك');
   updateCommunityStatus();
+  if(confirm('تم حفظ المساهمة محليًا. هل تريد فتح نموذج GitHub لإرسالها للمراجعة الآن؟')){
+    const body=[
+      '### FoodCheck Egypt product contribution',
+      '',
+      '**Barcode:** '+(entry.code||''),
+      '**Name:** '+(entry.name||''),
+      '**Brand:** '+(entry.brands||''),
+      '**Saturated fat /100g:** '+(entry.nutriments?.['saturated-fat_100g']??''),
+      '',
+      '**Ingredients**',
+      entry.ingredients_text||'',
+      '',
+      '> يرجى مراجعة البيانات قبل إضافتها إلى community-products.json.'
+    ].join('\n');
+    const url='https://github.com/mahmutnasser/foodcheck/issues/new?title='+encodeURIComponent('Egypt product: '+(entry.name||entry.code))+'&body='+encodeURIComponent(body);
+    window.open(url,'_blank','noopener');
+  }
 }
 function exportContributions(){
   const data={version:1,exportedAt:new Date().toISOString(),products:contributions()};
