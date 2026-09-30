@@ -2,7 +2,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const K={foods:'fc20_foods',history:'fc20_history',favorites:'fc20_favorites',compare:'fc20_compare',prefs:'fc20_prefs'};
 const quickFoods=[['موز','🍌','fruit'],['تفاح','🍎','fruit'],['برتقال','🍊','fruit'],['فراولة','🍓','fruit'],['شوفان','🥣','food'],['أرز','🍚','food'],['دجاج','🍗','meal'],['زبادي','🥛','food']];
 const builtInFoods=[
-  {code:'builtin-garlic',name:'ثوم',aliases:['ثوم','الثوم','garlic'],category:'خضار / بهار',ingredients_text:'ثوم',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-garlic',name:'ثوم',aliases:['ثوم','الثوم','توم','التوم','garlic'],category:'خضار / بهار',ingredients_text:'ثوم',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-onion',name:'بصل',aliases:['بصل','البصل','onion'],category:'خضار',ingredients_text:'بصل',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-tomato',name:'طماطم',aliases:['طماطم','الطماطم','بندورة','tomato'],category:'خضار',ingredients_text:'طماطم',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-wheat',name:'قمح',aliases:['قمح','القمح','دقيق القمح','دقيق قمح','wheat'],category:'حبوب',ingredients_text:'قمح',nutriments:{},manual:true,image:'',symptoms:[]},
@@ -73,7 +73,7 @@ function evaluate(item){
   // IBS / bloating: WGO + NIDDK + Monash FODMAP
   const wheat=match(['wheat flour','whole wheat','wheat','rye','tarwebloem','tarwe','rogge','weizenmehl','weizen','دقيق قمح','دقيق القمح','قمح','طحين قمح','سميد القمح','دقيق كامل','جاودار']);
   const onion=match(['onion powder','onions','onion','uien','ui ','بصل','مسحوق بصل','بودرة بصل']);
-  const garlic=match(['garlic powder','garlic','knoflook','ثوم','مسحوق ثوم','بودرة ثوم']);
+  const garlic=match(['garlic powder','garlic','knoflook','ثوم','توم','مسحوق ثوم','بودرة ثوم','مسحوق توم','بودرة توم']);
   const polyols=match(['sorbitol','maltitol','xylitol','mannitol','erythritol','isomalt','سوربيتول','مالتيتول','زيليتول','مانيتول','إريثريتول','اريثريتول','إيزومالت','ايزومالت']);
   const inulin=match(['inulin','chicory','cichorei','oligofructose','fructooligosaccharide','إينولين','انولين','شيكوري','جذر الهندباء']);
   const lactose=match(['lactose','milk powder','skimmed milk powder','whey powder','لاكتوز','حليب مجفف','لبن مجفف','مسحوق الحليب','مسحوق اللبن']);
