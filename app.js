@@ -37,7 +37,7 @@ const builtInFoods=[
   {code:'builtin-roumy-cheese',name:'جبنة رومي',aliases:['جبنة رومي','جبنه رومي','رومي','جبن رومي'],category:'ألبان',ingredients_text:'جبنة رومي',nutriments:{},manual:true,image:'',symptoms:[]},
 
   {code:'builtin-chicken',name:'دجاج',aliases:['دجاج','الدجاج','فراخ','الفراخ','فرخة','فرخه','chicken'],category:'بروتين',ingredients_text:'دجاج',nutriments:{},manual:true,image:'',symptoms:[]},
-  {code:'builtin-meat',name:'لحمة',aliases:['لحمة','لحمه','اللحمة','اللحمه','لحم','beef','meat'],category:'بروتين',ingredients_text:'لحم',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-meat',name:'لحمة',aliases:['لحمة','لحمه','اللحمة','اللحمه','لحم','لحمه حمرا','لحمة حمرا','لحم احمر','لحم أحمر','beef','meat','red meat'],category:'بروتين',ingredients_text:'لحم',nutriments:{},manual:true,image:'',symptoms:[],genericRedMeat:true},
   {code:'builtin-fish',name:'سمك',aliases:['سمك','السمك','fish'],category:'بروتين',ingredients_text:'سمك',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-shrimp',name:'جمبري',aliases:['جمبري','الجمبري','روبيان','shrimp','prawn','prawns'],category:'بروتين',ingredients_text:'جمبري',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-squid',name:'سبيط',aliases:['سبيط','السبيط','كاليماري','حبار','squid','calamari'],category:'بروتين',ingredients_text:'سبيط',nutriments:{},manual:true,image:'',symptoms:[]},
@@ -142,6 +142,9 @@ function evaluate(item){
   // GERD: NIDDK + WGO. These are possible triggers, not universal exclusions.
   const reflux=match(['tomato','tomaat','citrus','orange','lemon','chili','hot pepper','spicy','chocolate','cacao','cocoa','coffee','caffeine','mint','peppermint','طماطم','صلصة طماطم','حمضيات','برتقال','ليمون','شطة','فلفل حار','حار','شوكولاتة','كاكاو','قهوة','كافيين','نعناع']);
   const highFatForReflux=Number.isFinite(totalFat)&&totalFat>17.5;
+  const genericRedMeat=!!item.genericRedMeat||item.code==='builtin-meat'||['لحمه','لحمه حمرا','لحم','لحم احمر','beef','red meat'].includes(normalizeSearchText(item.name));
+  const processedMeatTerms=match(['sausage','sausages','salami','bacon','hot dog','deli meat','processed meat','سجق','سوسيس','لانشون','سلامي','بسطرمة','بسترمة','لحم مصنع','لحوم مصنعة']);
+  const processedMeat=processedMeatTerms.length>0;
 
   // Heart/cholesterol: WHO daily guidance + NHS product-label thresholds.
   const palm=match(['palm oil','palm fat','palmolein','زيت نخيل','زيت النخيل','دهن نخيل','زيت اولين النخيل','زيت أولين النخيل']);
@@ -178,6 +181,7 @@ function evaluate(item){
   if(highFatForReflux)refluxFlags.push('high-fat');
 
   const refluxCard=!p.reflux?{icon:'🔥',title:'الارتجاع المعدي المريئي',cls:'gray',value:'غير مفعّل',detail:'فعّل هذا القسم من الإعدادات'}
+    :genericRedMeat&&!Number.isFinite(totalFat)?{icon:'🔥',title:'الارتجاع المعدي المريئي',cls:'yellow',value:'يعتمد على نسبة الدهون',detail:'القطع الدسمة قد تزيد أعراض الارتجاع لدى بعض الأشخاص؛ القطعة القليلة الدهون ليست ممنوعة تلقائيًا'}
     :!hasIngredients&&!Number.isFinite(totalFat)?{icon:'🔥',title:'الارتجاع المعدي المريئي',cls:'gray',value:'معلومات غير كافية',detail:'لا توجد مكونات أو بيانات دهون كافية'}
     :refluxFlags.length?{icon:'🔥',title:'الارتجاع المعدي المريئي',cls:'yellow',value:'قد يهيّج الأعراض',detail:'هذه محفزات محتملة وليست ممنوعة للجميع؛ راقب استجابتك الشخصية'}
     :{icon:'🔥',title:'الارتجاع المعدي المريئي',cls:'green',value:'لا توجد مؤشرات واضحة',detail:'لم أجد محفزات شائعة في البيانات المتاحة'};
@@ -185,10 +189,18 @@ function evaluate(item){
   const gasCard=!p.gas?{icon:'🌾',title:'الغازات والانتفاخ',cls:'gray',value:'غير مفعّل',detail:'فعّل هذا القسم من الإعدادات'}
     :!hasIngredients?{icon:'🌾',title:'الغازات والانتفاخ',cls:'gray',value:'معلومات غير كافية',detail:'أضف قائمة المكونات لتقييم FODMAP بصورة أفضل'}
     :gas.length?{icon:'🌾',title:'الغازات والانتفاخ',cls:'yellow',value:'قد يسبب انتفاخًا',detail:`مؤشرات FODMAP محتملة: ${gasDetail.join('، ')}`}
-    :{icon:'🌾',title:'الغازات والانتفاخ',cls:'green',value:'لا توجد مؤشرات واضحة',detail:'لم أجد FODMAPs شائعة ضمن المكونات التي يفحصها التطبيق'};
+    :{icon:'🌾',title:'الغازات والانتفاخ',cls:'green',value:'لا توجد مؤشرات واضحة',detail:'اللحوم الطازجة غير المتبلة لا تحتوي عادةً على FODMAP؛ انتبه للبصل والثوم والصلصات المصاحبة'};
 
-  const heartCard=!p.chol?{icon:'♥',title:'الدهون المشبعة / الكوليسترول',cls:'gray',value:'غير مفعّل',detail:'فعّل هذا القسم من الإعدادات'}
-    :{icon:'♥',title:'الدهون المشبعة / الكوليسترول',...fat};
+  let heartCard;
+  if(!p.chol){
+    heartCard={icon:'♥',title:'الدهون المشبعة / الكوليسترول',cls:'gray',value:'غير مفعّل',detail:'فعّل هذا القسم من الإعدادات'};
+  }else if(processedMeat&&!hasSat){
+    heartCard={icon:'♥',title:'الدهون المشبعة / الكوليسترول',cls:'yellow',value:'قلّل اللحوم المصنّعة',detail:'السجق واللانشون والسلامي غالبًا أعلى في الدهون المشبعة والملح؛ اخترها أقل تكرارًا وراجع الملصق'};
+  }else if(genericRedMeat&&!hasSat){
+    heartCard={icon:'♥',title:'الدهون المشبعة / الكوليسترول',cls:'yellow',value:'يعتمد على القطعة',detail:'اختر قطعة قليلة الدهون، أزل الدهون الظاهرة، ويفضل اللحم غير المصنّع. أدخل الدهون المشبعة/100غ إن كانت متاحة لتقييم أدق'};
+  }else{
+    heartCard={icon:'♥',title:'الدهون المشبعة / الكوليسترول',...fat};
+  }
 
   const cards=[refluxCard,gasCard,heartCard];
   const active=cards.filter(c=>c.value!=='غير مفعّل');
@@ -204,12 +216,14 @@ function evaluate(item){
   else if(gray){overall='gray';title='بيانات ناقصة';detail='بعض الجوانب تبدو جيدة، لكن البيانات غير مكتملة'}
 
   const basis=[
-    refluxCard.cls==='yellow'?'الارتجاع: تم رصد محفزات شائعة مذكورة في إرشادات NIDDK/WGO.':'',
+    genericRedMeat?'اللحمة الحمراء ليست ممنوعة تلقائيًا: WHO وNHS وAHA يوصون باختيار القطع قليلة الدهون، إزالة الدهون الظاهرة، وتفضيل اللحوم غير المصنّعة. WHO توصي بأن تكون الدهون المشبعة أقل من 10% من الطاقة اليومية.':'',
+    refluxCard.cls==='yellow'&&!genericRedMeat?'الارتجاع: تم رصد محفزات شائعة مذكورة في إرشادات NIDDK/WGO.':'',
+    genericRedMeat&&refluxCard.cls==='yellow'?'الارتجاع: القطع الأعلى دهونًا قد تكون أكثر إزعاجًا؛ الاختيار يعتمد على نسبة الدهون واستجابتك الشخصية.':'',
     gasCard.cls==='yellow'?'القولون/الانتفاخ: تم رصد مكونات FODMAP محتملة وفق WGO/NIDDK وMonash.':'',
-    heartCard.cls==='red'||heartCard.cls==='yellow'?'القلب: تصنيف الدهون المشبعة يعتمد على غ/100غ؛ حدود 1.5غ و5غ مأخوذة من إرشادات قراءة الملصقات في NHS، مع هدف WHO اليومي للدهون المشبعة.':''
+    !genericRedMeat&&(heartCard.cls==='red'||heartCard.cls==='yellow')?'القلب: تصنيف الدهون المشبعة يعتمد على غ/100غ؛ حدود 1.5غ و5غ مأخوذة من إرشادات قراءة الملصقات في NHS، مع هدف WHO اليومي للدهون المشبعة.':''
   ].filter(Boolean).join(' ');
 
-  return{overall,title,detail,cards,wheat,onion,garlic,polyols,inulin,lactose,fructose,highFodmapFruit,legumes,fodmapVeg,reflux,palm,partialHydrogenated,sat,totalFat,basis};
+  return{overall,title,detail,cards,wheat,onion,garlic,polyols,inulin,lactose,fructose,highFodmapFruit,legumes,fodmapVeg,reflux,palm,partialHydrogenated,sat,totalFat,basis,genericRedMeat,processedMeat};
 }
 function openResult(item){current=item;addHistory(item);const ev=evaluate(item);showScreen('resultScreen');$('#resultImage').src=item.image||'';$('#resultImage').style.visibility=item.image?'visible':'hidden';$('#resultName').textContent=item.name||'بدون اسم';$('#resultMeta').textContent=item.manual?(item.category||'أكلة محفوظة'):`${item.brands||''}${item.quantity?' · '+item.quantity:''}`;$('#resultCode').textContent=item.manual?'':item.code;const box=$('#overallBox');box.className='overall-box '+ev.overall;$('#overallTitle').textContent=ev.title;$('#overallDetail').textContent=ev.detail;$('#healthCards').innerHTML=ev.cards.map(c=>`<div class="health-row ${c.cls}"><div class="hicon">${c.icon}</div><div class="hcopy"><strong>${esc(c.title)}</strong><b>${esc(c.value)}</b><p>${esc(c.detail)}</p></div></div>`).join('');if($('#decisionBasis'))$('#decisionBasis').textContent=ev.basis||'التقييم يعتمد على البيانات المتاحة فقط، ولا توجد قاعدة واحدة تمنع طعامًا بعينه لكل الأشخاص.';refreshFavButtons()}
 function refreshFavButtons(){if(!current)return;const yes=favorites().includes(current.code);$('#resultFavBtn').textContent=yes?'♥':'♡';$('#favoriteBtn').innerHTML=`<span>${yes?'♥':'♡'}</span><b>${yes?'إزالة من المفضلة':'أضف للمفضلة'}</b>`}
@@ -286,7 +300,7 @@ function openIngredients(){
   else if(Number.isFinite(ev.sat)&&ev.sat>1.5)ws.push({cls:'yellow',tag:'♥ الدهون المشبعة',name:'متوسطة',desc:`${ev.sat}غ/100غ`});
   if(ev.partialHydrogenated.length)ws.push({cls:'red',tag:'♥ دهون متحولة',name:'زيوت مهدرجة جزئيًا',desc:'WHO توصي بأن تكون الدهون المتحولة أقل من 1% من الطاقة اليومية'});
   $('#ingredientWarnings').innerHTML=ws.map(w=>`<div class="ingredient-warning ${w.cls}"><div class="wtag">${w.tag}</div><div><b>${w.name}</b><small>${w.desc}</small></div></div>`).join('')||'<div class="ingredient-warning info"><div class="wtag">✓</div><div><b>لا توجد تحذيرات واضحة</b><small>البيانات المتاحة لا تُظهر محفزات معروفة ضمن القواعد الحالية.</small></div></div>';
-  $('#ingredientAdvice').textContent=ev.wheat.length||ev.onion.length||ev.garlic.length?'إرشادات WGO/NIDDK تشير إلى أن Low-FODMAP قد يفيد بعض مرضى IBS، لكن ليس الجميع؛ الهدف تجربة قصيرة ثم إعادة إدخال الأطعمة لمعرفة تحمّلك الشخصي.':'FoodCheck يربط التقييم بإرشادات عامة موثوقة، لكنه لا يشخّص ولا يستبدل الطبيب أو أخصائي التغذية.';
+  $('#ingredientAdvice').textContent=ev.genericRedMeat?'بالنسبة للحوم الحمراء، لا يكفي اسم «لحمة» وحده للحكم على الكوليسترول. الأفضل معرفة القطعة ونسبة الدهون؛ اختر القطع القليلة الدهون وأزل الدهون الظاهرة وقلل اللحوم المصنّعة.':ev.wheat.length||ev.onion.length||ev.garlic.length?'إرشادات WGO/NIDDK تشير إلى أن Low-FODMAP قد يفيد بعض مرضى IBS، لكن ليس الجميع؛ الهدف تجربة قصيرة ثم إعادة إدخال الأطعمة لمعرفة تحمّلك الشخصي.':'FoodCheck يربط التقييم بإرشادات عامة موثوقة، لكنه لا يشخّص ولا يستبدل الطبيب أو أخصائي التغذية.';
 }
 function renderSaved(){let list=allItems(),f=favorites();if(savedMode==='fav')list=list.filter(x=>f.includes(x.code));if(savedMode==='fruit')list=list.filter(x=>x.category==='fruit');if(savedMode==='meal')list=list.filter(x=>x.category==='meal');const q=$('#savedSearch').value.trim();if(q)list=list.filter(x=>(x.name||'').includes(q));$('#savedList').innerHTML=list.length?list.map(x=>{const emoji=quickFoods.find(z=>z[0]===x.name)?.[1]||'🍽️';return`<div class="saved-row" data-code="${esc(x.code)}">${x.image?`<img class="saved-avatar" src="${esc(x.image)}" alt="">`:`<div class="saved-avatar">${emoji}</div>`}<div class="saved-copy"><b>${esc(x.name)}</b><small>${esc(x.manual?(x.category||'أكلة محفوظة'):(x.brands||'منتج'))}</small></div><button class="row-heart" data-fav="${esc(x.code)}">${f.includes(x.code)?'♥':'♡'}</button><button class="row-menu" data-del="${esc(x.code)}">⋮</button></div>`}).join(''):'<div class="saved-row"><div class="saved-copy"><b>لا توجد عناصر</b><small>أضف أكلة أو احفظ منتجًا.</small></div></div>';$$('#savedList [data-code]').forEach(r=>r.onclick=e=>{if(e.target.closest('button'))return;const i=allItems().find(x=>x.code===r.dataset.code);if(i)openResult(i)});$$('#savedList [data-fav]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleFavorite(b.dataset.fav)});$$('#savedList [data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();const code=b.dataset.del;if(confirm('حذف هذا العنصر من أكلاتي المحفوظة؟')){save(K.foods,foods().filter(x=>x.code!==code));save(K.history,history().filter(x=>x.code!==code));save(K.favorites,favorites().filter(x=>x!==code));renderSaved()}});$$('#savedFilters button').forEach(b=>b.classList.toggle('active',b.dataset.filter===savedMode))}
 function addCompare(code){let c=compare().filter(x=>x!==code);c.unshift(code);save(K.compare,c.slice(0,2));toast('تمت الإضافة للمقارنة')}
