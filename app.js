@@ -4,13 +4,69 @@ const quickFoods=[['موز','🍌','fruit'],['تفاح','🍎','fruit'],['برت
 const builtInFoods=[
   {code:'builtin-garlic',name:'ثوم',aliases:['ثوم','الثوم','توم','التوم','garlic'],category:'خضار / بهار',ingredients_text:'ثوم',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-onion',name:'بصل',aliases:['بصل','البصل','onion'],category:'خضار',ingredients_text:'بصل',nutriments:{},manual:true,image:'',symptoms:[]},
-  {code:'builtin-tomato',name:'طماطم',aliases:['طماطم','الطماطم','بندورة','tomato'],category:'خضار',ingredients_text:'طماطم',nutriments:{},manual:true,image:'',symptoms:[]},
-  {code:'builtin-wheat',name:'قمح',aliases:['قمح','القمح','دقيق القمح','دقيق قمح','wheat'],category:'حبوب',ingredients_text:'قمح',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-tomato',name:'طماطم',aliases:['طماطم','الطماطم','قوطة','قوطه','tomato'],category:'خضار',ingredients_text:'طماطم',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-potato',name:'بطاطس',aliases:['بطاطس','البطاطس','potato','potatoes'],category:'خضار',ingredients_text:'بطاطس',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-sweet-potato',name:'بطاطا',aliases:['بطاطا','البطاطا','sweet potato'],category:'خضار',ingredients_text:'بطاطا',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-zucchini',name:'كوسة',aliases:['كوسة','كوسه','الكوسة','الكوسه','كوسا','zucchini','courgette'],category:'خضار',ingredients_text:'كوسة',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-eggplant',name:'باذنجان',aliases:['باذنجان','الباذنجان','eggplant','aubergine'],category:'خضار',ingredients_text:'باذنجان',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-cucumber',name:'خيار',aliases:['خيار','الخيار','cucumber'],category:'خضار',ingredients_text:'خيار',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-carrot',name:'جزر',aliases:['جزر','الجزر','carrot'],category:'خضار',ingredients_text:'جزر',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-cabbage',name:'كرنب',aliases:['كرنب','الكرنب','ملفوف','cabbage'],category:'خضار',ingredients_text:'كرنب',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-cauliflower',name:'قرنبيط',aliases:['قرنبيط','القرنبيط','زهرة','زهره','cauliflower'],category:'خضار',ingredients_text:'قرنبيط',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-peas',name:'بسلة',aliases:['بسلة','بسله','البسلة','البسله','بازلاء','peas'],category:'خضار',ingredients_text:'بسلة',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-okra',name:'بامية',aliases:['بامية','باميه','البامية','الباميه','okra'],category:'خضار',ingredients_text:'بامية',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-molokhia',name:'ملوخية',aliases:['ملوخية','ملوخيه','الملوخية','الملوخيه','molokhia','molokhiya'],category:'خضار',ingredients_text:'ملوخية',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-spinach',name:'سبانخ',aliases:['سبانخ','السبانخ','spinach'],category:'خضار',ingredients_text:'سبانخ',nutriments:{},manual:true,image:'',symptoms:[]},
+
+  {code:'builtin-wheat',name:'قمح',aliases:['قمح','القمح','دقيق القمح','دقيق قمح','طحين قمح','wheat'],category:'حبوب',ingredients_text:'قمح',nutriments:{},manual:true,image:'',symptoms:[]},
   {code:'builtin-oats',name:'شوفان',aliases:['شوفان','الشوفان','oats','oat'],category:'حبوب',ingredients_text:'شوفان',nutriments:{},manual:true,image:'',symptoms:[]},
-  {code:'builtin-rice',name:'أرز',aliases:['أرز','ارز','الأرز','الارز','rice'],category:'حبوب',ingredients_text:'أرز',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-rice',name:'أرز',aliases:['أرز','ارز','الأرز','الارز','رز','الرز','rice'],category:'حبوب',ingredients_text:'أرز',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-pasta',name:'مكرونة',aliases:['مكرونة','مكرونه','المكرونة','المكرونه','معكرونة','pasta','macaroni'],category:'حبوب',ingredients_text:'دقيق قمح',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-bread',name:'عيش بلدي',aliases:['عيش','العيش','عيش بلدي','العيش البلدي','خبز','خبز بلدي','baladi bread'],category:'خبز',ingredients_text:'دقيق قمح',nutriments:{},manual:true,image:'',symptoms:[]},
+
+  {code:'builtin-fava',name:'فول',aliases:['فول','الفول','فول مدمس','الفول المدمس','fava beans','ful','foul'],category:'بقوليات',ingredients_text:'فول',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-lentils',name:'عدس',aliases:['عدس','العدس','lentils','lentil'],category:'بقوليات',ingredients_text:'عدس',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-chickpeas',name:'حمص',aliases:['حمص','الحمص','chickpeas','chickpea'],category:'بقوليات',ingredients_text:'حمص',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-beans',name:'فاصوليا',aliases:['فاصوليا','فاصوليه','الفاصوليا','الفاصوليه','beans'],category:'بقوليات',ingredients_text:'فاصوليا',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-blackeyed',name:'لوبيا',aliases:['لوبيا','اللوبيا','black eyed peas','black-eyed peas'],category:'بقوليات',ingredients_text:'لوبيا',nutriments:{},manual:true,image:'',symptoms:[]},
+
+  {code:'builtin-milk',name:'لبن',aliases:['لبن','اللبن','حليب','الحليب','milk'],category:'ألبان',ingredients_text:'حليب',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-yogurt',name:'زبادي',aliases:['زبادي','الزبادي','yogurt','yoghurt'],category:'ألبان',ingredients_text:'زبادي',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-cheese',name:'جبنة',aliases:['جبنة','جبنه','الجبنة','الجبنه','cheese'],category:'ألبان',ingredients_text:'جبنة',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-cottage-cheese',name:'جبنة قريش',aliases:['جبنة قريش','جبنه قريش','قريش','cottage cheese'],category:'ألبان',ingredients_text:'جبنة قريش',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-roumy-cheese',name:'جبنة رومي',aliases:['جبنة رومي','جبنه رومي','رومي','جبن رومي'],category:'ألبان',ingredients_text:'جبنة رومي',nutriments:{},manual:true,image:'',symptoms:[]},
+
+  {code:'builtin-chicken',name:'دجاج',aliases:['دجاج','الدجاج','فراخ','الفراخ','فرخة','فرخه','chicken'],category:'بروتين',ingredients_text:'دجاج',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-meat',name:'لحمة',aliases:['لحمة','لحمه','اللحمة','اللحمه','لحم','beef','meat'],category:'بروتين',ingredients_text:'لحم',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-fish',name:'سمك',aliases:['سمك','السمك','fish'],category:'بروتين',ingredients_text:'سمك',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-shrimp',name:'جمبري',aliases:['جمبري','الجمبري','روبيان','shrimp','prawn','prawns'],category:'بروتين',ingredients_text:'جمبري',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-squid',name:'سبيط',aliases:['سبيط','السبيط','كاليماري','حبار','squid','calamari'],category:'بروتين',ingredients_text:'سبيط',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-eggs',name:'بيض',aliases:['بيض','البيض','egg','eggs'],category:'بروتين',ingredients_text:'بيض',nutriments:{},manual:true,image:'',symptoms:[]},
+
   {code:'builtin-banana',name:'موز',aliases:['موز','الموز','banana'],category:'فاكهة',ingredients_text:'موز',nutriments:{},manual:true,image:'',symptoms:[]},
-  {code:'builtin-apple',name:'تفاح',aliases:['تفاح','التفاح','apple'],category:'فاكهة',ingredients_text:'تفاح',nutriments:{},manual:true,image:'',symptoms:[]}
-];
+  {code:'builtin-apple',name:'تفاح',aliases:['تفاح','التفاح','apple'],category:'فاكهة',ingredients_text:'تفاح',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-orange',name:'برتقال',aliases:['برتقال','البرتقال','برتقان','البرتقان','orange'],category:'فاكهة',ingredients_text:'برتقال',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-tangerine',name:'يوسفي',aliases:['يوسفي','يوسفى','اليوسفي','اليوسفى','tangerine','mandarin'],category:'فاكهة',ingredients_text:'يوسفي',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-strawberry',name:'فراولة',aliases:['فراولة','فراوله','الفراولة','الفراوله','strawberry'],category:'فاكهة',ingredients_text:'فراولة',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-mango',name:'مانجو',aliases:['مانجو','المانجو','mango'],category:'فاكهة',ingredients_text:'مانجو',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-guava',name:'جوافة',aliases:['جوافة','جوافه','الجوافة','الجوافه','guava'],category:'فاكهة',ingredients_text:'جوافة',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-watermelon',name:'بطيخ',aliases:['بطيخ','البطيخ','watermelon'],category:'فاكهة',ingredients_text:'بطيخ',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-dates',name:'بلح',aliases:['بلح','البلح','تمر','التمر','dates','date'],category:'فاكهة',ingredients_text:'تمر',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-grapes',name:'عنب',aliases:['عنب','العنب','grapes','grape'],category:'فاكهة',ingredients_text:'عنب',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-peach',name:'خوخ',aliases:['خوخ','الخوخ','peach'],category:'فاكهة',ingredients_text:'خوخ',nutriments:{},manual:true,image:'',symptoms:[]},
+  {code:'builtin-apricot',name:'مشمش',aliases:['مشمش','المشمش','apricot'],category:'فاكهة',ingredients_text:'مشمش',nutriments:{},manual:true,image:'',symptoms:[]},
+
+  {code:'builtin-koshary',name:'كشري',aliases:['كشري','كشرى','الكشري','الكشرى','koshari','koshary'],category:'وجبة مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-taameya',name:'طعمية',aliases:['طعمية','طعميه','الطعمية','الطعميه','فلافل','falafel','taameya'],category:'وجبة مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-mahshi',name:'محشي',aliases:['محشي','محشى','المحشي','المحشى','mahshi'],category:'وجبة مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-hawawshi',name:'حواوشي',aliases:['حواوشي','حواوشى','الحواوشي','الحواوشى','hawawshi'],category:'وجبة مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-kofta',name:'كفتة',aliases:['كفتة','كفته','الكفتة','الكفته','kofta','kefta'],category:'وجبة',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-kebda',name:'كبدة',aliases:['كبدة','كبده','الكبدة','الكبده','kebda','liver'],category:'وجبة',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-macaroni-bechamel',name:'مكرونة بشاميل',aliases:['مكرونة بشاميل','مكرونه بشاميل','بشاميل','macaroni bechamel'],category:'وجبة مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-feteer',name:'فطير مشلتت',aliases:['فطير مشلتت','فطير','الفطير','feteer','feteer meshaltet'],category:'وجبة مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-omali',name:'أم علي',aliases:['أم علي','ام علي','ام على','أم على','om ali','umm ali'],category:'حلوى مصرية',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true},
+  {code:'builtin-roz-bel-laban',name:'رز بلبن',aliases:['رز بلبن','ارز بلبن','أرز بلبن','rice pudding'],category:'حلوى / ألبان',ingredients_text:'',nutriments:{},manual:true,image:'',symptoms:[],needsIngredients:true}
+]
 function normalizeSearchText(s){
   return String(s||'').toLowerCase().trim()
     .replace(/[\u064B-\u065F\u0670\u0640]/g,'')
@@ -78,8 +134,10 @@ function evaluate(item){
   const inulin=match(['inulin','chicory','cichorei','oligofructose','fructooligosaccharide','إينولين','انولين','شيكوري','جذر الهندباء']);
   const lactose=match(['lactose','milk powder','skimmed milk powder','whey powder','لاكتوز','حليب مجفف','لبن مجفف','مسحوق الحليب','مسحوق اللبن']);
   const fructose=match(['high fructose corn syrup','glucose-fructose syrup','honey','شراب ذرة عالي الفركتوز','شراب جلوكوز فركتوز','عسل']);
-  const highFodmapFruit=match(['apple','pear','mango','cherry','watermelon','تفاح','كمثرى','مانجو','كرز','بطيخ']);
-  const gas=[...new Set([...wheat,...onion,...garlic,...polyols,...inulin,...lactose,...fructose,...highFodmapFruit])];
+  const highFodmapFruit=match(['apple','pear','mango','cherry','watermelon','peach','apricot','تفاح','كمثرى','مانجو','كرز','بطيخ','خوخ','مشمش']);
+  const legumes=match(['fava beans','beans','lentil','lentils','chickpea','chickpeas','black eyed peas','فول','فاصوليا','فاصوليه','عدس','حمص','لوبيا','بسلة','بسله','بازلاء']);
+  const fodmapVeg=match(['cauliflower','cabbage','mushroom','قرنبيط','كرنب','مشروم','فطر']);
+  const gas=[...new Set([...wheat,...onion,...garlic,...polyols,...inulin,...lactose,...fructose,...highFodmapFruit,...legumes,...fodmapVeg])];
 
   // GERD: NIDDK + WGO. These are possible triggers, not universal exclusions.
   const reflux=match(['tomato','tomaat','citrus','orange','lemon','chili','hot pepper','spicy','chocolate','cacao','cocoa','coffee','caffeine','mint','peppermint','طماطم','صلصة طماطم','حمضيات','برتقال','ليمون','شطة','فلفل حار','حار','شوكولاتة','كاكاو','قهوة','كافيين','نعناع']);
@@ -112,7 +170,9 @@ function evaluate(item){
   if(polyols.length)gasDetail.push('مُحلّيات كحولية');
   if(lactose.length)gasDetail.push('لاكتوز/حليب مجفف');
   if(fructose.length)gasDetail.push('فركتوز زائد/عسل');
-  if(highFodmapFruit.length)gasDetail.push('فاكهة قد تكون أعلى FODMAP');
+  if(highFodmapFruit.length)gasDetail.push('فاكهة قد تكون أعلى FODMAP حسب النوع والكمية');
+  if(legumes.length)gasDetail.push('بقوليات — الكمية مهمة في FODMAP');
+  if(fodmapVeg.length)gasDetail.push('خضار قد تكون أعلى FODMAP حسب الكمية');
 
   const refluxFlags=[...reflux];
   if(highFatForReflux)refluxFlags.push('high-fat');
@@ -149,7 +209,7 @@ function evaluate(item){
     heartCard.cls==='red'||heartCard.cls==='yellow'?'القلب: تصنيف الدهون المشبعة يعتمد على غ/100غ؛ حدود 1.5غ و5غ مأخوذة من إرشادات قراءة الملصقات في NHS، مع هدف WHO اليومي للدهون المشبعة.':''
   ].filter(Boolean).join(' ');
 
-  return{overall,title,detail,cards,wheat,onion,garlic,polyols,inulin,lactose,fructose,highFodmapFruit,reflux,palm,partialHydrogenated,sat,totalFat,basis};
+  return{overall,title,detail,cards,wheat,onion,garlic,polyols,inulin,lactose,fructose,highFodmapFruit,legumes,fodmapVeg,reflux,palm,partialHydrogenated,sat,totalFat,basis};
 }
 function openResult(item){current=item;addHistory(item);const ev=evaluate(item);showScreen('resultScreen');$('#resultImage').src=item.image||'';$('#resultImage').style.visibility=item.image?'visible':'hidden';$('#resultName').textContent=item.name||'بدون اسم';$('#resultMeta').textContent=item.manual?(item.category||'أكلة محفوظة'):`${item.brands||''}${item.quantity?' · '+item.quantity:''}`;$('#resultCode').textContent=item.manual?'':item.code;const box=$('#overallBox');box.className='overall-box '+ev.overall;$('#overallTitle').textContent=ev.title;$('#overallDetail').textContent=ev.detail;$('#healthCards').innerHTML=ev.cards.map(c=>`<div class="health-row ${c.cls}"><div class="hicon">${c.icon}</div><div class="hcopy"><strong>${esc(c.title)}</strong><b>${esc(c.value)}</b><p>${esc(c.detail)}</p></div></div>`).join('');if($('#decisionBasis'))$('#decisionBasis').textContent=ev.basis||'التقييم يعتمد على البيانات المتاحة فقط، ولا توجد قاعدة واحدة تمنع طعامًا بعينه لكل الأشخاص.';refreshFavButtons()}
 function refreshFavButtons(){if(!current)return;const yes=favorites().includes(current.code);$('#resultFavBtn').textContent=yes?'♥':'♡';$('#favoriteBtn').innerHTML=`<span>${yes?'♥':'♡'}</span><b>${yes?'إزالة من المفضلة':'أضف للمفضلة'}</b>`}
@@ -174,7 +234,12 @@ async function searchName(q){
 
   const built=builtInFoodForQuery(q);
   if(built){
-    openResult({...built});
+    if(built.needsIngredients){
+      openAddFood(built.name);
+      toast('الأكلة لها وصفات مختلفة — أضف مكوناتها لتحليل أدق');
+    }else{
+      openResult({...built});
+    }
     return;
   }
 
@@ -214,6 +279,8 @@ function openIngredients(){
   if(ev.polyols.length)ws.push({cls:'yellow',tag:'💨 Polyols',name:'مُحلّيات كحولية',desc:'مثل سوربيتول ومالتيتول وزيليتول؛ قد تكون FODMAP عالية'});
   if(ev.lactose.length)ws.push({cls:'yellow',tag:'🥛 لاكتوز',name:'مكوّن ألبان محتمل',desc:'قد يسبب أعراضًا إذا كان اللاكتوز من محفزاتك'});
   if(ev.fructose.length||ev.highFodmapFruit.length)ws.push({cls:'yellow',tag:'🍯 فركتوز/FODMAP',name:'مصدر محتمل',desc:'قد يحتاج تجربة فردية وكمية صغيرة'});
+  if(ev.legumes?.length)ws.push({cls:'yellow',tag:'🫘 بقوليات',name:'الكمية مهمة',desc:'بعض البقول قد تكون أعلى FODMAP حسب النوع والحصة'});
+  if(ev.fodmapVeg?.length)ws.push({cls:'yellow',tag:'🥦 خضار FODMAP',name:'الكمية مهمة',desc:'التحمل يختلف حسب النوع والكمية'});
   if(ev.reflux.length||(Number.isFinite(ev.totalFat)&&ev.totalFat>17.5))ws.push({cls:'yellow',tag:'🔥 الارتجاع',name:'محفز محتمل',desc:'NIDDK/WGO يوصيان بتجنب المحفزات التي تزيد أعراضك شخصيًا بدل منع كل هذه الأطعمة للجميع'});
   if(Number.isFinite(ev.sat)&&ev.sat>5)ws.push({cls:'red',tag:'♥ الدهون المشبعة',name:'مرتفعة',desc:`${ev.sat}غ/100غ — أكثر من 5غ/100غ يُصنَّف مرتفعًا في إرشادات NHS للملصقات`});
   else if(Number.isFinite(ev.sat)&&ev.sat>1.5)ws.push({cls:'yellow',tag:'♥ الدهون المشبعة',name:'متوسطة',desc:`${ev.sat}غ/100غ`});
